@@ -76,4 +76,15 @@ http://127.0.0.1:8000/
 
 3. 生成的样例视频如下：
 
-<video src="https://github.com/kuangdd2024/auto-video-generateor/blob/main/mnt/materials/date_time/video.mp4"></video>
+<table>
+<thead>
+<tr>
+<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>守株待兔</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><video src="https://github.com/kuangdd2024/auto-video-generateor/blob/main/mnt/materials/date_time/video.mp4"></video></td>
+</tr>
+</tbody>
+</table>
