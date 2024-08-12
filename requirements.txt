@@ -1,0 +1,5 @@
+gradio
+moviepy
+pillow
+pyttsx3
+pypiwin32
