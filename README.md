@@ -84,7 +84,7 @@ http://127.0.0.1:8000/
 </thead>
 <tbody>
 <tr>
-<td align="center"><video src="https://github.com/kuangdd2024/auto-video-generateor/blob/main/mnt/materials/date_time/video.mp4"></video></td>
+<td align="center"><video src="https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e"></video></td>
 </tr>
 </tbody>
 </table>
