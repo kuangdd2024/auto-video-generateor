@@ -76,6 +76,4 @@ http://127.0.0.1:8000/
 
 3. 生成的样例视频如下：
 
-<video width="720" height="480" controls>
-    <source src="mnt/materials/date_time/video.mp4" type="video/mp4">
-</video>
+<video src="https://github.com/kuangdd2024/auto-video-generateor/blob/main/mnt/materials/date_time/video.mp4"></video>
