@@ -107,25 +107,17 @@ http://127.0.0.1:8000/
 
 3. 生成的样例视频如下：
 
-<table>
-<thead>
-<tr>
-<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>简单：守株待兔</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center"><video src="https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e"></video></td>
-</tr>
-</tbody>
-<thead>
-<tr>
-<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>千帆：守株待兔</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center"><video src="https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974"></video></td>
-</tr>
-</tbody>
+<table class="center">
+  <tr style="font-weight: bolder;text-align:center;">
+        <td width="50%">简单：守株待兔</td>
+        <td width="50%">千帆：守株待兔</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
+    </td>
+  </tr>
 </table>
