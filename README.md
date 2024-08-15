@@ -1,13 +1,34 @@
 # auto-video-generateor
 自动视频生成器，给定主题，自动生成解说视频。用户输入主题文字，系统调用大语言模型生成故事或解说的文字，然后进一步调用语音合成接口生成解说的语音，调用文生图接口生成契合文字内容的配图，最后融合语音和配图生成解说视频。
 
+## 🌈️⭐️
+
+❤️️🌈喜欢的话，不妨“点石成金”点 Star ⭐️，“携手并进” Fork 一下🌳，你的点⭐️是我的动力，感谢🎉🌟！
+
+## 免费的自动视频生成
+
+全部用免费的资源实现，体现完整流程和初步效果。
+
+### 相关文档
+
+[千帆ModelBuilder 部分ERNIE系列模型免费开放公告 - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/wlwg8f1i3)
+
+[ERNIE-Speed-128K - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/6ltgkzya5)
+
+[如何用GPT直接生成AI绘画？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/639471405)
+
+[2.8k star! 用开源免费的edge-tts平替科大讯飞的语音合成服务 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/685186002)
+
 ## 基于千帆大模型的自动视频生成
 基于百度的千帆大模型生成故事和图像，然后进一步生成视频。
 
 ### 相关文档
 [API列表 - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Nlks5zkzu)
+
 [Python SDK快速入门 - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/3lmokh7n6)
+
 [Stable-Diffusion-XL - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Klkqubb9w)
+
 [ERNIE-4.0-8K - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/clntwmv7t)
 
 ## 实现方案
@@ -35,7 +56,8 @@
 
 ### 执行代码
 ```shell
-python simple_webui.py
+# 参数可选：1 2 3
+python main.py 2
 ```
 
 ### 打开浏览器
@@ -88,12 +110,22 @@ http://127.0.0.1:8000/
 <table>
 <thead>
 <tr>
-<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>守株待兔</th>
+<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>简单：守株待兔</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="center"><video src="https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e"></video></td>
+</tr>
+</tbody>
+<thead>
+<tr>
+<th align="center"><g-emoji class="g-emoji" alias="arrow_forward">▶️</g-emoji>千帆：守株待兔</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><video src="https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974"></video></td>
 </tr>
 </tbody>
 </table>

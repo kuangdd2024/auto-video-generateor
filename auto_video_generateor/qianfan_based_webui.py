@@ -19,8 +19,9 @@ import tqdm
 
 import qianfan
 
-os.environ["QIANFAN_ACCESS_KEY"] = "ALTAKc5yYaLe5QS***********"
-os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
+# 自行在环境变量设置千帆的参数
+# os.environ["QIANFAN_ACCESS_KEY"] = "ALTAKc5yYaLe5QS***********"
+# os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
 
 t_now = time.strftime('%Y-%m-%d_%H.%M.%S')
 
@@ -59,8 +60,11 @@ def generate_story(prompt, story_file=f'{_save_dir}/story.txt'):
 def split_sentences(story, text_dir=f'{_save_dir}/text'):
     os.makedirs(text_dir, exist_ok=True)
 
-    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|。|！|？)\s*', story)
-    sentences = [w.strip() for w in sentences if w.strip()]
+    # sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|。|！|？)\s*', story)
+    # sentences = [w.strip() for w in sentences if w.strip()]
+    sentences = re.split(r'([”‘（【《]*.+?[”‘）】》]*[\n。？?！!；;—…：:]+\s*)', story)
+    sentences = [w.strip() for sen in sentences for w in re.split(r"(.{10,30}\W+)", sen)
+                 if re.search(r'\w', w.strip())]
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="split_sentences")):
         text_path = f'{text_dir}/text_{i}.txt'
         with open(text_path, 'wt', encoding='utf8') as fout:
@@ -96,7 +100,7 @@ def synthesize_speech(sentences, audio_dir=f'{_save_dir}/audio'):
     return audio_files
 
 
-def text2image(prompt):
+def text2image(prompt, theme):
     """
     生成图片长宽，说明：
 （1）默认值 1024x1024，
@@ -134,24 +138,48 @@ def text2image(prompt):
     t2i = qianfan.Text2Image()
     # 文心一格（微调后）
     # resp = t2i.do(prompt="A Ragdoll cat with a bowtie.", with_decode="base64",endpoint="your_custom_endpoint")
-    prompt = f"请首先根据正文内容生成细节丰富的图像，人物请用中国人。正文内容：{prompt}"
+    prompt = f"图像内容：{prompt} 色调、场景、风格的限制范围：{theme}".replace('\n', ' ')
+
     resp = t2i.do(prompt=prompt, with_decode="base64", model="Stable-Diffusion-XL",
-                  size="1024x576", n=1, retry_count=3, style="Cinematic")
+                  size="1024x576", n=1, retry_count=3, style="Anime")
     img_data = resp["body"]["data"][0]["image"]
     return img_data
 
 
 # 文字图片占位
-def generate_images(sentences, image_dir=f'{_save_dir}/image'):
+def generate_images(sentences, theme, image_dir=f'{_save_dir}/image'):
     os.makedirs(image_dir, exist_ok=True)
 
     images = []
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="generate_images")):
-        img_data = text2image(sentence)
+        img_data = text2image(sentence, theme)
         img_path = f"{image_dir}/image_{i}.png"
         with open(img_path, 'wb') as fout:
             fout.write(img_data)
+
+        # (1280, 720)
+        # img = Image.new('RGB', (720, 480), color=(73, 109, 137))
+        img = Image.open(img_path)
+        d = ImageDraw.Draw(img)
+
+        font_name, font_size = "msyh.ttc", 32
+        # 使用Windows系统中的微软雅黑字体
+        font_path = f"C:/Windows/Fonts/{font_name}"  # 微软雅黑字体文件路径
+        if not os.path.isfile(font_path):
+            font_path = os.path.join(_root_dir, f'static/fonts/{font_name}')
+        font_file = ImageFont.truetype(font_path, int(font_size))
+        text = sentence.strip()
+        bbox = d.textbbox((0, 0), text, font=font_file)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
+        width, height = img.size
+        x = (width - text_w) / 2
+        y = (height - text_h) * 0.85
+        d.text((x, y), text, font=font_file, fill=(255, 255, 255))
+        img_path = f"{image_dir}/image_{i}.png"
+        img.save(img_path)
         images.append(img_path)
+
     print(f"generate_images 输入: {sentences}")
     print(f"generate_images 输出: {images}")
     return images
@@ -181,11 +209,11 @@ def process_story(theme):
     return story
 
 
-def generste_results(story):
+def generate_results(story, theme):
     sents = split_sentences(story)
     ids = [w + 1 for w in range(len(sents))]
     audios = synthesize_speech(sents)
-    images = generate_images(sents)
+    images = generate_images(sents, theme)
     results = list(zip(ids, sents, audios, images))
     return results
 
@@ -231,8 +259,8 @@ with gr.Blocks() as demo:
         outputs=[story_output],
     )
     result_button.click(
-        fn=generste_results,
-        inputs=story_output,
+        fn=generate_results,
+        inputs=[story_output, theme_input],
         outputs=results_output,
     )
     create_video_button.click(

@@ -23,6 +23,16 @@ import pyttsx3
 
 tts_engine = pyttsx3.init()
 
+# 获取语音属性
+rate = tts_engine.getProperty('rate')
+volume = tts_engine.getProperty('volume')
+voices = tts_engine.getProperty('voices')
+
+# 设置语音属性（可选）
+tts_engine.setProperty('voice', voices[0].id)  # 音色
+tts_engine.setProperty('rate', rate)  # 语速
+tts_engine.setProperty('volume', volume)  # 音量
+
 
 # 示例故事文本
 def generate_story(theme, story_file=f'{_save_dir}/story.txt'):
@@ -50,6 +60,13 @@ def split_sentences(story, text_dir=f'{_save_dir}/text'):
 
 
 def text_to_speech(text, filename):
+    """
+    [pyttsx3 - Text-to-speech x-platform — pyttsx3 2.6 documentation](https://pyttsx3.readthedocs.io/en/latest/index.html)
+
+    :param text:
+    :param filename:
+    :return:
+    """
     engine = pyttsx3.init()
     # 设置语音属性（可选）
     engine.setProperty('rate', 150)  # 语速
@@ -195,4 +212,5 @@ with gr.Blocks() as demo:
         outputs=video_output,
     )
 
-demo.launch(server_name='127.0.0.1', server_port=8000, show_error=True)
+if __name__ == "__main__":
+    demo.launch(server_name='127.0.0.1', server_port=8000, show_error=True)
