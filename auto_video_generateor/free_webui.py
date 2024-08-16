@@ -9,8 +9,10 @@
 [如何用GPT直接生成AI绘画？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/639471405)
 [2.8k star! 用开源免费的edge-tts平替科大讯飞的语音合成服务 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/685186002)
 """
+import hashlib
 import json
 import os
+import pathlib
 import re
 import time
 
@@ -206,8 +208,10 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
     :param prompt:
     :return:
     """
+    size, desc = size.split('/')
     width, height = size.split('x')
-    img_url = f'https://image.pollinations.ai/prompt/{prompt}?width={width}&height={height}&seed=271828'
+    seed = ord(desc[-1])
+    img_url = f'https://image.pollinations.ai/prompt/{prompt}?width={width}&height={height}&seed={seed}'
     response = requests.get(img_url, verify=False)
     img_data = response.content
     return img_data
@@ -368,15 +372,37 @@ with gr.Blocks() as demo:
                                     value="内容：```{}```\n\n请根据以上代码块的内容生成故事，要求内容丰富，限制在200字以内。")
 
     gr.Markdown("### 图像参数设置")
+    image_sizes = ["768x768/头像", "1024x1024/头像", "1536x1536/头像", "2048x2048/头像",  # · 适用头像：
+                   "1024x768/文章配图", "2048x1536/文章配图",  # · 适用文章配图 ：
+                   "768x1024/海报传单", "1536x2048/海报传单",  # · 适用海报传单：
+                   "1024x576/电脑壁纸", "2048x1152/电脑壁纸",  # · 适用电脑壁纸：
+                   "576x1024/海报传单", "1152x2048/海报传单",  # · 适用海报传单：
+                   "426x240/240p",  # 像素（240p）
+                   "320:240/流畅240p4:3"  # 流畅
+                   "640x360/流畅360p",  # 像素（360p）
+                   "854x480/标清480p",  # 像素（480p）
+                   "640x480/标清480p4:3"  # 标清
+                   "720x480/标清480p3:2"  # 标清
+                   "1280x720/高清720p抖音B站",  # 像素（720p）油管，西瓜视频，B站，抖音
+                   "1920x1080/全高清1080p",  # 像素（1080p）
+                   "2560x1440/2K",  # 像素（1440p）
+                   "2048x1080/2K1:1.9",  # 2K视频
+                   "3840x2160/4K",  # 像素（2160p）
+                   "7680x4320/8K",  # 全超高清
+                   "1920x1080/竖版抖音",  # 竖版视频到抖音
+                   ]
+    font_choices = [f'{w.name}+{s}' for w in sorted(pathlib.Path(pathlib.Path(_root_dir).joinpath("static", "fonts")).glob('*')) for s in [24, 32, 40]]
     with gr.Row():
         person_input = gr.Textbox(label="风格描述", placeholder="输入风格、限制等描述，用{}表示放正文内容",
                                   value="图像内容：{} 图像限制：图中所有人物都用大熊猫代替，必须用大熊猫替换人，去除各种文字，不要任何文字！")
-        size_input = gr.Textbox(label="图像大小", placeholder="输入图像的宽度x高度，例如：1280x720", value="1280x720")
-        font_input = gr.Textbox(label="字体参数", placeholder="输入字体类型+大小字号：", value="msyh.ttc+32")
+        size_input = gr.Dropdown(image_sizes, value="1280x720/抖音B站", label="图像大小", allow_custom_value=True)
+        # size_input = gr.Textbox(label="图像大小", placeholder="输入图像的宽度x高度，例如：1280x720", value="1280x720")
+        font_input = gr.Dropdown(font_choices, value="msyh.ttc+32", label="字体参数", allow_custom_value=True)
+        # font_input = gr.Textbox(label="字体参数", placeholder="输入字体类型+大小字号：", value="msyh.ttc+32")
 
     gr.Markdown('### 语音参数设置')
     with gr.Row():
-        voice_input = gr.Dropdown(zh_voices, value=zh_voices[3], label="发音人")
+        voice_input = gr.Dropdown(zh_voices, value=zh_voices[3], label="发音人", allow_custom_value=True)
         rate_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="语速")
         volume_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="音量")
         pitch_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="音调")

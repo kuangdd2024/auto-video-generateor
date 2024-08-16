@@ -66,7 +66,7 @@ http://127.0.0.1:8000/
 
 界面：
 
-![webui_demo.jpeg](static/webui.jpg)
+![webui](static/webui.jpg)
 
 ### 交互操作
 
@@ -121,7 +121,7 @@ http://127.0.0.1:8000/
     </td>
   </tr>
   <tr style="font-weight: bolder;text-align:center;">
-        <td width="100%">免费：守株待兔</td>
+        <td width="50%">免费：守株待兔</td>
   </tr>
   <tr>
     <td >
