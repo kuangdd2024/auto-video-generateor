@@ -19,7 +19,7 @@
 
 [2.8k star! 用开源免费的edge-tts平替科大讯飞的语音合成服务 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/685186002)
 
-## 基于千帆大模型的自动视频生成
+## 基于千帆的自动视频生成
 基于百度的千帆大模型生成故事和图像，然后进一步生成视频。
 
 ### 相关文档
@@ -31,25 +31,25 @@
 
 [ERNIE-4.0-8K - 千帆大模型平台 | 百度智能云文档 (baidu.com)](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/clntwmv7t)
 
-## 实现方案
+## 极简的自动视频生成
 实现这个系统需要多个步骤，包括生成故事文本、分句、语音合成、文生图、生成视频、以及使用Gradio进行交互。
 
-### 步骤 1: 生成故事文本
+- 步骤 1: 生成故事文本
 为了简化，我们先手动创建一个示例故事文本。
 
-### 步骤 2: 分句
+- 步骤 2: 分句
 使用`re`库或自然语言处理工具将文本分句。
 
-### 步骤 3: 语音合成
+- 步骤 3: 语音合成
 使用`pyttsx3`库或其他语音合成模型进行语音合成。
 
-### 步骤 4: 文生图
+- 步骤 4: 文生图
 使用`pillow`库或其他文生图模型生成图片。
 
-### 步骤 5: 生成视频
+- 步骤 5: 生成视频
 使用`moviepy`库将图片和音频组合成视频。
 
-### 步骤 6: 使用Gradio实现交互
+- 步骤 6: 使用Gradio实现交互
 使用`gradio`库创建一个简单的交互界面。
 
 ## 使用方法
@@ -66,7 +66,7 @@ http://127.0.0.1:8000/
 
 界面：
 
-![webui](static/webui.png)
+![webui_demo.jpeg](static/webui.jpg)
 
 ### 交互操作
 
@@ -118,6 +118,14 @@ http://127.0.0.1:8000/
     </td>
     <td >
       <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
+    </td>
+  </tr>
+  <tr style="font-weight: bolder;text-align:center;">
+        <td width="100%">免费：守株待兔</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/84e524b9-2518-4e84-b51b-ff4e4e0cd580 controls preload></video>
     </td>
   </tr>
 </table>

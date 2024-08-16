@@ -11,5 +11,12 @@ elif sys.argv[1] == ["3", "free"]:
 else:
     assert sys.argv[1] in '123'
 
-if __name__ == "__main__":
-    demo.launch(server_name='127.0.0.1', server_port=8000, show_error=True)
+demo.queue(max_size=1022).launch(
+    server_name="0.0.0.0",
+    inbrowser=True,
+    share=True,
+    server_port=8000,
+    quiet=True,
+    # auth=lambda x, y: x == y,  # ("admin", "pass1234"),
+    # auth_message='欢迎来到自动视频生成的世界'
+)

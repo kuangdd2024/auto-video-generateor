@@ -3,3 +3,6 @@ moviepy
 pillow
 pyttsx3
 pypiwin32
+edge_tts
+tqdm
+qianfan
