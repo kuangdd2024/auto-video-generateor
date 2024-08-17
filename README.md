@@ -126,10 +126,14 @@ http://127.0.0.1:8000/
   </tr>
   <tr style="font-weight: bolder;text-align:center;">
         <td width="50%">免费：守株待兔</td>
+        <td width="50%">校对：皮格马利翁效应</td>
   </tr>
   <tr>
     <td >
       <video src=https://github.com/user-attachments/assets/84e524b9-2518-4e84-b51b-ff4e4e0cd580 controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/d56734c9-759c-453f-b27f-d98ba985be1d controls preload></video>
     </td>
   </tr>
 </table>

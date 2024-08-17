@@ -481,7 +481,7 @@ if __name__ == "__main__":
     parser.add_argument('--is_share', default="False", help='whether webui is_share=True')
     parser.add_argument('--load_list', default="None", help='source file, like demo.list')
     parser.add_argument('--load_resource',
-                        default=r"C:\Users\kuang\github\kuangdd2024\auto-video-generateor\mnt\materials\2024-08-16_10.22.51\resource",
+                        default=r"/directory/to/resource",
                         help='source file, like /resource')
     parser.add_argument('--webui_port_subfix', default=9871, help='source file, like demo.list')
     parser.add_argument('--json_key_text', default="text", help='the text key name in json, Default: text')
@@ -499,7 +499,7 @@ if __name__ == "__main__":
 
         with gr.Row():
             btn_change_index = gr.Button("跳转")
-            btn_submit_change = gr.Button("生成资源")
+            btn_submit_change = gr.Button("生成视频")
             btn_merge_audio = gr.Button("合并资源")
             btn_delete_audio = gr.Button("删除资源")
             btn_previous_index = gr.Button("上一页")
@@ -507,10 +507,10 @@ if __name__ == "__main__":
 
         with gr.Row():
             index_slider = gr.Slider(
-                minimum=0, maximum=g_max_json_index, value=g_index, step=1, label="Index", scale=3
+                minimum=0, maximum=g_max_json_index, value=g_index, step=1, label="序号", scale=3
             )
             splitpoint_slider = gr.Slider(
-                minimum=0, maximum=120.0, value=0, step=0.1, label="Audio Split Point(s)", scale=3
+                minimum=0, maximum=120.0, value=0, step=0.1, label="切分点", scale=3
             )
             btn_audio_split = gr.Button("切分资源", scale=1)
             btn_save_json = gr.Button("保存资源", visible=True, scale=1)
@@ -601,10 +601,10 @@ if __name__ == "__main__":
 
         with gr.Row():
             batchsize_slider = gr.Slider(
-                minimum=1, maximum=g_batch, value=g_batch, step=1, label="Batch Size", scale=3, interactive=False
+                minimum=1, maximum=g_batch, value=g_batch, step=1, label="单页数量", scale=3, interactive=False
             )
             interval_slider = gr.Slider(
-                minimum=0, maximum=2, value=0, step=0.01, label="Interval", scale=3
+                minimum=0, maximum=2, value=0, step=0.01, label="间隔数量", scale=3
             )
             btn_theme_dark = gr.Button("Light Theme", link="?__theme=light", scale=1)
             btn_theme_light = gr.Button("Dark Theme", link="?__theme=dark", scale=1)
