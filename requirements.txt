@@ -6,3 +6,4 @@ pypiwin32
 edge_tts
 tqdm
 qianfan
+pydub

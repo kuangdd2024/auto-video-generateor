@@ -5,6 +5,38 @@
 
 ❤️️🌈喜欢的话，不妨“点石成金”点 Star ⭐️，“携手并进” Fork 一下🌳，你的点⭐️是我的动力，感谢🎉🌟！
 
+
+## 视频样例先睹为快
+
+<table class="center">
+  <tr style="font-weight: bolder;text-align:center;">
+        <td width="50%">免费：守株待兔</td>
+        <td width="50%">校对：皮格马利翁效应</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/84e524b9-2518-4e84-b51b-ff4e4e0cd580 controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/d56734c9-759c-453f-b27f-d98ba985be1d controls preload></video>
+    </td>
+  </tr>
+  <tr style="font-weight: bolder;text-align:center;">
+        <td width="50%">简单：守株待兔</td>
+        <td width="50%">千帆：守株待兔</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
+    </td>
+  </tr>
+
+</table>
+
+
 ## 免费的自动视频生成
 
 全部用免费的资源实现，体现完整流程和初步效果。
@@ -61,7 +93,7 @@
 ### 执行代码
 ```shell
 # 参数可选：1 2 3
-python main.py 2
+python main.py 3
 ```
 
 ### 打开浏览器
@@ -108,32 +140,3 @@ http://127.0.0.1:8000/
         text_3.txt
         text_4.txt
 ```
-
-3. 生成的样例视频如下：
-
-<table class="center">
-  <tr style="font-weight: bolder;text-align:center;">
-        <td width="50%">简单：守株待兔</td>
-        <td width="50%">千帆：守株待兔</td>
-  </tr>
-  <tr>
-    <td >
-      <video src=https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e controls preload></video>
-    </td>
-    <td >
-      <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
-    </td>
-  </tr>
-  <tr style="font-weight: bolder;text-align:center;">
-        <td width="50%">免费：守株待兔</td>
-        <td width="50%">校对：皮格马利翁效应</td>
-  </tr>
-  <tr>
-    <td >
-      <video src=https://github.com/user-attachments/assets/84e524b9-2518-4e84-b51b-ff4e4e0cd580 controls preload></video>
-    </td>
-    <td >
-      <video src=https://github.com/user-attachments/assets/d56734c9-759c-453f-b27f-d98ba985be1d controls preload></video>
-    </td>
-  </tr>
-</table>
