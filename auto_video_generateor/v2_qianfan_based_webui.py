@@ -100,7 +100,7 @@ def synthesize_speech(sentences, audio_dir=f'{_save_dir}/audio'):
     return audio_files
 
 
-def text2image(prompt, theme):
+def text2image(prompt, topic):
     """
     生成图片长宽，说明：
 （1）默认值 1024x1024，
@@ -138,7 +138,7 @@ def text2image(prompt, theme):
     t2i = qianfan.Text2Image()
     # 文心一格（微调后）
     # resp = t2i.do(prompt="A Ragdoll cat with a bowtie.", with_decode="base64",endpoint="your_custom_endpoint")
-    prompt = f"图像内容：{prompt} 色调、场景、风格的限制范围：{theme}".replace('\n', ' ')
+    prompt = f"图像内容：{prompt} 色调、场景、风格的限制范围：{topic}".replace('\n', ' ')
 
     resp = t2i.do(prompt=prompt, with_decode="base64", model="Stable-Diffusion-XL",
                   size="1024x576", n=1, retry_count=3, style="Anime")
@@ -147,12 +147,12 @@ def text2image(prompt, theme):
 
 
 # 文字图片占位
-def generate_images(sentences, theme, image_dir=f'{_save_dir}/image'):
+def generate_images(sentences, topic, image_dir=f'{_save_dir}/image'):
     os.makedirs(image_dir, exist_ok=True)
 
     images = []
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="generate_images")):
-        img_data = text2image(sentence, theme)
+        img_data = text2image(sentence, topic)
         img_path = f"{image_dir}/image_{i}.png"
         with open(img_path, 'wb') as fout:
             fout.write(img_data)
@@ -204,16 +204,16 @@ def create_video(sentences, audio_files, images, video_file=f'{_save_dir}/video.
 
 
 # Gradio 交互界面
-def process_story(theme):
-    story = generate_story(theme)
+def process_story(topic):
+    story = generate_story(topic)
     return story
 
 
-def generate_results(story, theme):
+def generate_results(story, topic):
     sents = split_sentences(story)
     ids = [w + 1 for w in range(len(sents))]
     audios = synthesize_speech(sents)
-    images = generate_images(sents, theme)
+    images = generate_images(sents, topic)
     results = list(zip(ids, sents, audios, images))
     return results
 
@@ -241,10 +241,10 @@ def create_final_video(results):
 
 
 with gr.Blocks() as demo:
-    theme_input = gr.Textbox(label="主题文字", placeholder="输入一个主题文字", value="守株待兔")
+    topic_input = gr.Textbox(label="主题文字", placeholder="输入一个主题文字", value="守株待兔")
 
     with gr.Row():
-        theme_button = gr.Button("生成故事")
+        topic_button = gr.Button("生成故事")
         result_button = gr.Button("生成资源")
         create_video_button = gr.Button("生成视频")
     story_output = gr.Textbox(label="故事文本")
@@ -253,14 +253,14 @@ with gr.Blocks() as demo:
                                   label="视频所需资源")
     video_output = gr.Video(label="视频")
 
-    theme_button.click(
+    topic_button.click(
         fn=process_story,
-        inputs=theme_input,
+        inputs=topic_input,
         outputs=[story_output],
     )
     result_button.click(
         fn=generate_results,
-        inputs=[story_output, theme_input],
+        inputs=[story_output, topic_input],
         outputs=results_output,
     )
     create_video_button.click(

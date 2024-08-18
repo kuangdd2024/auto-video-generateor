@@ -35,11 +35,11 @@ tts_engine.setProperty('volume', volume)  # 音量
 
 
 # 示例故事文本
-def generate_story(theme, story_file=f'{_save_dir}/story.txt'):
-    story = "从前有一个农夫，每天辛勤地在田里耕作。一天，他在田里看到一只兔子撞到树桩上死了。农夫非常高兴，把兔子带回家美餐了一顿。从那以后，他每天都守在树桩旁，希望再捡到撞死的兔子。结果，他再也没有捡到兔子，田里的庄稼也荒废了。" if theme == "守株待兔" else f"这是一个关于{theme}的故事。"
+def generate_story(topic, story_file=f'{_save_dir}/story.txt'):
+    story = "从前有一个农夫，每天辛勤地在田里耕作。一天，他在田里看到一只兔子撞到树桩上死了。农夫非常高兴，把兔子带回家美餐了一顿。从那以后，他每天都守在树桩旁，希望再捡到撞死的兔子。结果，他再也没有捡到兔子，田里的庄稼也荒废了。" if topic == "守株待兔" else f"这是一个关于{topic}的故事。"
     with open(story_file, 'wt', encoding='utf8') as fout:
         fout.write(story)
-    print(f"generate_story 输入: {theme}")
+    print(f"generate_story 输入: {topic}")
     print(f"generate_story 输出: {story}")
     return story
 
@@ -147,8 +147,8 @@ def create_video(sentences, audio_files, images, video_file=f'{_save_dir}/video.
 
 
 # Gradio 交互界面
-def process_story(theme):
-    story = generate_story(theme)
+def process_story(topic):
+    story = generate_story(topic)
     return story
 
 
@@ -184,10 +184,10 @@ def create_final_video(results):
 
 
 with gr.Blocks() as demo:
-    theme_input = gr.Textbox(label="主题文字", placeholder="输入一个主题文字", value="守株待兔")
+    topic_input = gr.Textbox(label="主题文字", placeholder="输入一个主题文字", value="守株待兔")
 
     with gr.Row():
-        theme_button = gr.Button("生成故事")
+        topic_button = gr.Button("生成故事")
         result_button = gr.Button("生成资源")
         create_video_button = gr.Button("生成视频")
     story_output = gr.Textbox(label="故事文本")
@@ -196,9 +196,9 @@ with gr.Blocks() as demo:
                                   label="视频所需资源")
     video_output = gr.Video(label="视频")
 
-    theme_button.click(
+    topic_button.click(
         fn=process_story,
-        inputs=theme_input,
+        inputs=topic_input,
         outputs=[story_output],
     )
     result_button.click(

@@ -284,7 +284,7 @@ def create_video(sentences, audio_files, images, video_file=""):
     return final_video_path
 
 
-def process_story(theme, template):
+def process_story(topic, template):
     global _save_dir
     t_now = time.strftime('%Y-%m-%d_%H.%M.%S')
 
@@ -292,7 +292,7 @@ def process_story(theme, template):
     _save_dir = os.path.join(_root_dir, f'mnt/materials/{t_now}')
     os.makedirs(_save_dir, exist_ok=True)
 
-    story = generate_story(theme, template)
+    story = generate_story(topic, template)
     return story
 
 
@@ -347,7 +347,7 @@ def create_final_video(results):
     return create_video(sentences, audio_files, images)
 
 
-def one_click_pipeline(theme, template, size, font, person, voice_input, rate_input, volume_input, pitch_input):
+def one_click_pipeline(topic, template, size, font, person, voice_input, rate_input, volume_input, pitch_input):
     global _save_dir
     t_now = time.strftime('%Y-%m-%d_%H.%M.%S')
 
@@ -355,7 +355,7 @@ def one_click_pipeline(theme, template, size, font, person, voice_input, rate_in
     _save_dir = os.path.join(_root_dir, f'mnt/materials/{t_now}')
     os.makedirs(_save_dir, exist_ok=True)
 
-    story = process_story(theme, template)
+    story = process_story(topic, template)
     yield story, None, None
     results = generate_results(story, size, font, person, voice_input, rate_input, volume_input, pitch_input)
     yield story, results, None
@@ -367,7 +367,7 @@ with gr.Blocks() as demo:
     gr.Markdown("## 自动视频生成器")
     gr.Markdown("### 故事参数设置")
     with gr.Row():
-        theme_input = gr.Textbox(label="主题", placeholder="输入主题内容", value="守株待兔")
+        topic_input = gr.Textbox(label="主题", placeholder="输入主题内容", value="守株待兔")
         template_input = gr.Textbox(label="提示词模板", placeholder="输入提示词模板，用{}表示放主题文字的地方",
                                     value="内容：```{}```\n\n请根据以上代码块的内容生成故事，要求内容丰富，限制在200字以内。")
 
@@ -410,7 +410,7 @@ with gr.Blocks() as demo:
     one_button = gr.Button("一键生成")
 
     with gr.Row():
-        theme_button = gr.Button("生成故事")
+        topic_button = gr.Button("生成故事")
         result_button = gr.Button("生成资源")
         create_video_button = gr.Button("生成视频")
     story_output = gr.Textbox(label="故事文本")
@@ -420,14 +420,14 @@ with gr.Blocks() as demo:
     video_output = gr.Video(label="视频")
     one_button.click(
         fn=one_click_pipeline,
-        inputs=[theme_input, template_input, size_input, font_input, person_input, voice_input, rate_input,
+        inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input, rate_input,
                 volume_input, pitch_input],
         outputs=[story_output, results_output, video_output],
     )
 
-    theme_button.click(
+    topic_button.click(
         fn=process_story,
-        inputs=[theme_input, template_input],
+        inputs=[topic_input, template_input],
         outputs=[story_output],
     )
     result_button.click(
