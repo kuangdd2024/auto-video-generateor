@@ -7,3 +7,4 @@ edge_tts
 tqdm
 qianfan
 pydub
+python-dotenv

@@ -5,6 +5,9 @@ import os
 # os.environ["QIANFAN_ACCESS_KEY"] = "ALTAKc5yYaLe5QS***********"
 # os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
 
+from dotenv import load_dotenv
+
+load_dotenv('config.env')
 
 if len(sys.argv) == 1:
     from auto_video_generateor.v4_free_checking_webui import demo
