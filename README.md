@@ -10,6 +10,18 @@
 
 <table class="center">
   <tr style="font-weight: bolder;text-align:center;">
+        <td width="50%">免费并校对：空白效应</td>
+        <td width="50%">免费并校对：飞轮效应</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/cbfdd5dd-2ad0-43bf-ae36-47bd18d13a21 controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/24103ecd-749d-4394-a3a5-8d454cfdd342 controls preload></video>
+    </td>
+  </tr>
+  <tr style="font-weight: bolder;text-align:center;">
         <td width="50%">免费：守株待兔</td>
         <td width="50%">校对：皮格马利翁效应</td>
   </tr>
@@ -33,7 +45,6 @@
       <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
     </td>
   </tr>
-
 </table>
 
 
@@ -94,8 +105,8 @@
 
 ### 执行代码
 ```shell
-# 参数可选：1 2 3
-python main.py 3
+# 参数可选：1 2 3 4
+python main.py 4
 ```
 
 ### 打开浏览器
@@ -149,6 +160,6 @@ http://127.0.0.1:8000/
 - [ ] 字体支持预览效果
 - [ ] 资源校对完善切分、合并、增加、删除的操作
 - [ ] 支持输入故事开始生成视频
-- [ ] 去除图片里的水印（等比例截取画面、调用去水印接口）
+- [x] 去除图片里的水印（等比例截取画面、调用去水印接口）
 - [ ] 写代码注释
 - [ ] 录制操作视频

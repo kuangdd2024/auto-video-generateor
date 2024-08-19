@@ -1,4 +1,10 @@
 import sys
+import os
+
+# 自行在环境变量设置千帆的参数
+# os.environ["QIANFAN_ACCESS_KEY"] = "ALTAKc5yYaLe5QS***********"
+# os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
+
 
 if len(sys.argv) == 1:
     from auto_video_generateor.v4_free_checking_webui import demo
@@ -18,7 +24,7 @@ if __name__ == "__main__":
         server_name="0.0.0.0",
         inbrowser=True,
         share=True,
-        server_port=8001,
+        server_port=8000,
         quiet=True,
         # auth=lambda x, y: x == y,  # ("admin", "pass1234"),
         # auth_message='欢迎来到自动视频生成的世界'
