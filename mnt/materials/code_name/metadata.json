@@ -10,6 +10,6 @@
     "volume": 50,
     "pitch": 50,
     "code_name": "棘轮效应（由奢入俭难）",
-    "save_dir": "C:/Users/kuang/github/kuangdd2024/auto-video-generateor/mnt/materials/棘轮效应（由奢入俭难）/",
+    "save_dir": "/abspath/to/mnt/materials/code_name/",
     "resource_count": 19
 }
