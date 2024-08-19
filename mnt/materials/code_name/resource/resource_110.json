@@ -1,0 +1,8 @@
+{
+    "index": 10,
+    "text": "让我们看看一个真实的案例故事。",
+    "prompt": "图像内容：{} 图像限制：电影风格，写实主义，唯美画风，场景简单，背景纯净",
+    "audio": "audio/audio_110.mp3",
+    "image": "image/image_110.png",
+    "resource": "resource/resource_110.json"
+}

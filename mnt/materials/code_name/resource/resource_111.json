@@ -1,0 +1,8 @@
+{
+    "index": 11,
+    "text": "哆哆从小生活在繁华都市，身着一线品牌的服装是他的日常。",
+    "prompt": "图像内容：{} 图像限制：电影风格，写实主义，唯美画风，场景简单，背景纯净",
+    "audio": "audio/audio_111.mp3",
+    "image": "image/image_111.png",
+    "resource": "resource/resource_111.json"
+}

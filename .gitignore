@@ -2,6 +2,7 @@
 tmp/
 mnt/
 !mnt/materials/date_time/
+!mnt/materials/code_name/
 
 __pycache__/
 *.py[cod]

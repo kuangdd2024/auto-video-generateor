@@ -1,0 +1,8 @@
+{
+    "index": 1,
+    "text": "一场无声的较量",
+    "prompt": "图像内容：{} 图像限制：电影风格，写实主义，唯美画风，场景简单，背景纯净",
+    "audio": "audio/audio_101.mp3",
+    "image": "image/image_101.png",
+    "resource": "resource/resource_101.json"
+}
