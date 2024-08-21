@@ -1,3 +1,5 @@
+import hashlib
+import base64
 import sys
 import os
 
@@ -22,6 +24,12 @@ elif sys.argv[1] in ["4", "checking"]:
 else:
     assert sys.argv[1] in '1234'
 
+
+def auth_checking(username, password):
+    password_true = username
+    return password in [password_true, password.lower(), password.upper()]
+
+
 if __name__ == "__main__":
     demo.queue(max_size=1022).launch(
         server_name="0.0.0.0",
@@ -29,6 +37,6 @@ if __name__ == "__main__":
         share=True,
         server_port=8000,
         quiet=True,
-        # auth=lambda x, y: x == y,  # ("admin", "pass1234"),
-        # auth_message='欢迎来到自动视频生成的世界'
+        auth=auth_checking,
+        auth_message='欢迎来到自动视频生成的世界'
     )

@@ -2,9 +2,12 @@ gradio
 moviepy
 pillow
 pyttsx3
-pypiwin32
+#Windows环境请安装pypiwin32
+#pypiwin32
 edge_tts
 tqdm
 qianfan
 pydub
 python-dotenv
+librosa
+soundfile

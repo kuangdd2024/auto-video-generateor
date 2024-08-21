@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  webui:
+    container_name: avg-webui
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - app_net
+
+    environment:
+      version: '1.0'
+    restart: always
+    ports:
+      - "7052:8000"
+    volumes:
+      - "./mnt/materials:/app/mnt/materials"
+    command: "python main.py"
+
+networks:
+  app_net:
+    driver: bridge
