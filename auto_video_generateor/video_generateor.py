@@ -50,7 +50,10 @@ def chat(prompt):
 
 
 # 示例故事文本
-def generate_story(prompt, template='{}', code_name=""):
+def generate_story(prompt, template='{}', code_name="", request: gr.Request = None):
+    if request:
+        code_name = f'{request.username}/{code_name}'
+    get_savepath(code_name, '', mkdir_ok=True)
     story_file = get_savepath(code_name, 'story.txt', mkdir_ok=False)
     if os.path.isfile(story_file):
         return open(story_file, encoding='utf8').read()
@@ -154,6 +157,8 @@ def synthesize_speech(sentences, voice="zh-CN-YunxiNeural", rate='+0%', volume='
 
     audio_files = []
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="synthesize_speech")):
+        if not sentence:
+            continue
         if save_path:
             audio_path = save_path
         else:
@@ -239,7 +244,7 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
                f'?width={width}&height={height}&seed={seed}&model={model}&nologo=true')
     try:
         response = requests.get(img_url, verify=False, timeout=(10, 20))
-    except requests.exceptions.ConnectionError as e:
+    except Exception as e:
         print(dict(img_url=img_url, error=e))
         import traceback
         traceback.print_exc()
@@ -300,6 +305,8 @@ def generate_images(sentences, size="1280x720/抖音B站", font="msyh.ttc+40", p
     # prompt_kw = chat(prompt_chat)
     images = []
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="generate_images")):
+        if not sentence:
+            continue
         if save_path:
             img_path = save_path
         else:
@@ -334,17 +341,33 @@ def generate_images(sentences, size="1280x720/抖音B站", font="msyh.ttc+40", p
 
 
 def create_resources(texts, prompts, audios, images, code_name):
+    """
+    ValueError: 'C:\\Users\\kuang\\AppData\\Local\\Temp\\gradio\\610284d670ce6bd048186063a1d5ab89baf955090d8040b446631762a77179ef\\audio_100.wav' is not in the subpath of 'C:\\Users\\kuang\\github\\kuangdd2024\\auto-video-generateor\\mnt\\materials\\abc\\斯坦福监狱实验104' OR one path is relative and the other is absolute.
+
+    :param texts:
+    :param prompts:
+    :param audios:
+    :param images:
+    :param code_name:
+    :return:
+    """
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
 
     resource_dir = get_savepath(code_name, 'resource', mkdir_ok=True)
 
     results = []
     for i, (sen, pmt, aud, img) in enumerate(tqdm.tqdm(zip(texts, prompts, audios, images), desc='create_resources')):
+        if not sen:
+            continue
         res_path = f"{resource_dir}/resource_{i + 100}.json"
 
+        # dt = dict(index=i, text=sen, prompt=pmt,
+        #           audio=get_relpath(code_name, aud),
+        #           image=get_relpath(code_name, img),
+        #           resource=get_relpath(code_name, res_path))
         dt = dict(index=i, text=sen, prompt=pmt,
-                  audio=get_relpath(code_name, aud),
-                  image=get_relpath(code_name, img),
+                  audio=f'audio/{os.path.basename(aud)}',
+                  image=f'image/{os.path.basename(img)}',
                   resource=get_relpath(code_name, res_path))
         with open(res_path, 'wt', encoding='utf8') as fout:
             json.dump(dt, fout, ensure_ascii=False, indent=4)
@@ -353,11 +376,10 @@ def create_resources(texts, prompts, audios, images, code_name):
 
 
 # 生成视频
-def create_video(results, code_name="", save_path=''):
+def create_video(results, code_name="", save_path='', request: gr.Request = None):
+    if request:
+        code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
-
-    def get_abspath(relpath):
-        return str(pathlib.Path(_save_dir).joinpath(relpath)).replace('\\', '/')
 
     if not save_path:
         video_file = get_savepath(code_name, 'video.mp4', mkdir_ok=False)
@@ -370,8 +392,8 @@ def create_video(results, code_name="", save_path=''):
     #     results = results.to_numpy()
     clips = []
     for dt in tqdm.tqdm(results, desc="create_video"):
-        audio = AudioFileClip(get_abspath(dt["audio"]))
-        image = ImageClip(get_abspath(dt["image"])).set_duration(audio.duration)
+        audio = AudioFileClip(get_abspath(code_name, dt["audio"]))
+        image = ImageClip(get_abspath(code_name, dt["image"])).set_duration(audio.duration)
         video = image.set_audio(audio)
         clips.append(video)
 

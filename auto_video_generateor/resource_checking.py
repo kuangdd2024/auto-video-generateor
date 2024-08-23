@@ -285,7 +285,8 @@ def b_load_json(g_load_file=''):
 
 def b_load_resource(g_load_file: object = '') -> object:
     # g_data_json, g_max_json_index
-    code_name = pathlib.Path(g_load_file).parent.name
+    code_name = '/'.join(pathlib.Path(g_load_file).parts[-3:-1])
+    # code_name = pathlib.Path(g_load_file).parent.name
     g_data_json = []
     for res_path in sorted(pathlib.Path(g_load_file).glob('*.json'), key=lambda x: int(x.stem.split('_')[-1])):
         dt = json.load(open(res_path, encoding='utf8'))

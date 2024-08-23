@@ -8,8 +8,10 @@ import os
 # os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
 
 from dotenv import load_dotenv
-
-load_dotenv('config.env')
+try:
+    load_dotenv('config.env')
+except:
+    print('load env file failed!')
 
 if len(sys.argv) == 1:
     from auto_video_generateor.v4_free_checking_webui import demo
@@ -27,7 +29,7 @@ else:
 
 def auth_checking(username, password):
     password_true = username
-    return password in [password_true, password.lower(), password.upper()]
+    return password in [password_true, password_true.lower(), password_true.upper()]
 
 
 if __name__ == "__main__":

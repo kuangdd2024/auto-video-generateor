@@ -17,7 +17,7 @@ from common_utils import _root_dir
 # os.environ["QIANFAN_SECRET_KEY"] = "eb058f32d47a4c5*****************"
 
 
-def b_video_output_change(code_name, video_output):
+def b_video_output_change(code_name, video_output, request: gr.Request):
     """
 
     :param story_output:
@@ -25,6 +25,7 @@ def b_video_output_change(code_name, video_output):
     :param video_output:
     :return:
     """
+    code_name = f'{request.username}/{code_name}'
     if code_name:
         res_path = get_savepath(code_name, 'resource', mkdir_ok=False)
     else:
@@ -35,9 +36,9 @@ def b_video_output_change(code_name, video_output):
     return video_check, *data_list
 
 
-def b_load_click(code_name):
+def b_load_click(code_name, request: gr.Request):
     """加载资源"""
-
+    code_name = f'{request.username}/{code_name}'
     res_path = get_savepath(code_name, 'resource', mkdir_ok=False)
 
     story_path = get_savepath(code_name, 'story.txt', mkdir_ok=False)
@@ -51,8 +52,23 @@ def b_load_click(code_name):
     return story_check, video_check, *data_list
 
 
+def b_save_metadata_click(topic, template, size, font, person, voice_input, rate_input, volume_input, pitch_input,
+                    code_name="", request: gr.Request = None):
+    code_name = f'{request.username}/{code_name}'
+    _save_dir = get_savepath(code_name, '', mkdir_ok=True)
+
+    metadata_file = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
+
+    with open(metadata_file, 'wt', encoding='utf8') as fout:
+        dt = dict(topic=topic, template=template, story="",
+                  size=size, font=font, person=person,
+                  voice=voice_input, rate=rate_input, volume=volume_input, pitch=pitch_input,
+                  code_name=code_name, save_dir=_save_dir, resource_count=0)
+        json.dump(dt, fout, ensure_ascii=False, indent=4)
+        print(dt)
+
 def b_generate_click(topic, template, size, font, person, voice_input, rate_input, volume_input, pitch_input,
-                     code_name=""):
+                     code_name="", request: gr.Request = None):
     """
     total_list = [
     *g_text_list,
@@ -73,6 +89,7 @@ def b_generate_click(topic, template, size, font, person, voice_input, rate_inpu
     :param code_name:
     :return:
     """
+    code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
 
     metadata_file = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
@@ -144,7 +161,8 @@ def b_generate_click(topic, template, size, font, person, voice_input, rate_inpu
     yield story, video, *total_list
 
 
-def b_compose_video(code_name, *resource_list):
+def b_compose_video(username, code_name, *resource_list):
+    code_name = f'{username}/{code_name}'
     video_file = get_savepath(code_name, 'video.mp4', mkdir_ok=False)
     if os.path.isfile(video_file):
         t = time.strftime(r'%Y%m%d%H%M%S')
@@ -169,12 +187,13 @@ def b_compose_video(code_name, *resource_list):
 
 
 def b_tts_change(text, audio, tts_check, voice="zh-CN-YunxiNeural", rate='+0%', volume='+0%', pitch='+0Hz',
-                 code_name=""):
+                 code_name="", request: gr.Request = None):
     """
 
     :param text:
     :return:
     """
+    code_name = f'{request.username}/{code_name}'
     if tts_check:
         if audio:
             if os.path.isfile(audio):
@@ -192,13 +211,15 @@ def b_tts_change(text, audio, tts_check, voice="zh-CN-YunxiNeural", rate='+0%', 
         return audio, False, tts_check
 
 
-def b_t2i_change(text, image, t2i_check, size="1280x720/抖音B站", font="msyh.ttc+40", person="{}", code_name=""):
+def b_t2i_change(text, image, t2i_check, size="1280x720/抖音B站", font="msyh.ttc+40", person="{}", code_name="",
+                 request: gr.Request = None):
     """
 
     :param text:
     :param prompt:
     :return:
     """
+    code_name = f'{request.username}/{code_name}'
     if t2i_check:
         if image:
             if os.path.isfile(image):
@@ -216,7 +237,8 @@ def b_t2i_change(text, image, t2i_check, size="1280x720/抖音B站", font="msyh.
         return image, False, t2i_check
 
 
-def b_confirm_check_change(code_name, video, confirm_check):
+def b_confirm_check_change(code_name, video, confirm_check, request: gr.Request):
+    code_name = f'{request.username}/{code_name}'
     video_file = get_savepath(code_name, 'video.mp4', mkdir_ok=False)
     if confirm_check:
         if video_check != video_file:
@@ -226,7 +248,7 @@ def b_confirm_check_change(code_name, video, confirm_check):
     return video_file
 
 
-def b_res_check(text, prompt, audio, image, resource, tts_check, t2i_check, res_check, code_name):
+def b_res_check(text, prompt, audio, image, resource, tts_check, t2i_check, res_check, code_name, request: gr.Request):
     """
 
     :param text:
@@ -236,6 +258,7 @@ def b_res_check(text, prompt, audio, image, resource, tts_check, t2i_check, res_
     :param res_check:
     :return:
     """
+    code_name = f'{request.username}/{code_name}'
     if res_check and resource:
         res_audio = get_abspath(code_name, resource['audio'])
         if audio != res_audio:
@@ -255,7 +278,7 @@ def b_res_check(text, prompt, audio, image, resource, tts_check, t2i_check, res_
     return text, prompt, audio, image, resource, tts_check, t2i_check, res_check
 
 
-def b_load_param_click(code_name):
+def b_load_param_click(code_name, request: gr.Request):
     """
         load_param_btn.click(b_load_param_click,
                          inputs=[code_name_input],
@@ -276,7 +299,8 @@ def b_load_param_click(code_name):
 }
     :return:
     """
-    meta_path = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
+    # code_name = f'{request.username}/{code_name}'
+    meta_path = get_savepath(code_name, 'metadata.json', mkdir_ok=False, request=request)
     metadata = json.load(open(meta_path, encoding='utf8'))
     keys = ['topic', 'template', 'story', 'size', 'font', 'person', 'voice', 'rate', 'volume', 'pitch']
     defaults = ['', '', '', '', '', '', '', 0, 0, 0]
@@ -284,6 +308,54 @@ def b_load_param_click(code_name):
     for key, value in zip(keys, defaults):
         outputs.append(metadata.get(key, value))
     return outputs[0], *outputs[1:]
+
+
+def b_update_code_names(request: gr.Request):
+    username = request.username
+    code_name_choices = [w.name for w in sorted(pathlib.Path(get_savepath('', username, mkdir_ok=False)).glob('*'))]
+    return {"choices": code_name_choices, "__type__": "update"}
+
+
+def b_split_text_click(story, person, code_name, request: gr.Request):
+    code_name = f'{request.username}/{code_name}'
+    texts = ['' for _ in range(g_max_json_index * 2)]
+    sens = split_sentences(story, code_name)
+    texts[:len(sens)] = sens
+    texts[g_max_json_index: g_max_json_index + len(sens)] = [person] * len(sens)
+    return texts
+
+
+def b_synthesize_audio_click(*args):
+    args = list(args)
+    args[-2] = f'{args[-1]}/{args[-2]}'
+    audios = [None for _ in range(g_max_json_index)]
+    for i, w in enumerate(synthesize_speech(args[:-6], *args[-6:-1])):
+        audios[i] = w
+        yield audios
+
+
+def b_generate_image_click(*args):
+    args = list(args)
+    args[-2] = f'{args[-1]}/{args[-2]}'
+    images = [None for _ in range(g_max_json_index)]
+    for i, w in enumerate(generate_images(args[:-5], *args[-5:-1])):
+        images[i] = w
+        yield images
+
+
+def b_create_resource_click(code_name, username, *total_list):
+    code_name = f'{username}/{code_name}'
+    n_sents = g_max_json_index
+    resources = create_resources(texts=total_list[: n_sents],
+                                 prompts=total_list[g_max_json_index: g_max_json_index + n_sents],
+                                 audios=total_list[2 * g_max_json_index: 2 * g_max_json_index + n_sents],
+                                 images=total_list[3 * g_max_json_index: 3 * g_max_json_index + n_sents],
+                                 code_name=code_name)
+    resources = list(resources)
+    checks = [True if i < len(resources) else False for i in range(g_max_json_index)]
+    resources.extend([{} for _ in range(g_max_json_index - len(resources))])
+    resources.extend(checks)
+    return resources
 
 
 g_text_list = []
@@ -294,19 +366,33 @@ g_resource_list = []
 g_checkbox_list = []
 g_data_json = []
 
-code_name_choices = [w.name for w in sorted(pathlib.Path(get_savepath('', '', mkdir_ok=False)).glob('*'))]
-
 template_value = """内容：```{}```
 
 请根据以上代码块的内容生成口语风格的文案；前面部分讲解内容核心，用比喻、排比等修辞，引用古诗词、谚语等名句；后半部分讲案例故事，用抖音电影解说风格，语言风趣幽默；整个文案限制在300字以内。"""
 
-image_prompt_value = "图像内容：{} 图像限制：电影风格，写实主义，唯美画风，环境简单，没有文字"
+template_value = """内容：```{}```
+
+请根据以上代码块的内容生成口语风格的文案；前面部分讲解内容核心，后半部分讲案例故事，语言风趣幽默；整个文案限制在100字以内。"""
+
+image_prompt_value = "图像内容：{} 图像限制：电影风格，写实主义，环境简单，没有文字"
+
+
+def load_username(request: gr.Request):
+    # 这个函数可以用来更新界面元素，例如显示欢迎信息
+    print("username:", request.username)
+    return request.username
+
 
 with gr.Blocks() as demo:
     gr.Markdown("## 自动视频生成器")
     with gr.Row():
-        code_name_input = gr.Dropdown(code_name_choices, value="请输入代号名称", label="代号名称（支持自定义输入）",
-                                      allow_custom_value=True)
+        username = gr.Textbox(value="", label="用户名", interactive=False)
+        demo.load(load_username, inputs=None, outputs=[username])
+        with gr.Column():
+            code_name_input = gr.Dropdown([], value="请输入代号名称", label="代号名称（支持自定义输入）",
+                                          allow_custom_value=True)
+            update_code_names_btn = gr.Button('更新代号列表')
+            update_code_names_btn.click(b_update_code_names, inputs=None, outputs=code_name_input)
         # force_check = gr.Checkbox(
         #     label="强制更新",
         #     value=True,
@@ -314,13 +400,14 @@ with gr.Blocks() as demo:
         #     info="在生成资源过程中，是否强制更新资源",
         #     scale=1
         # )
-        generate_button = gr.Button("生成资源")
-        with gr.Column():
-            load_param_btn = gr.Button("加载参数")
-            load_button = gr.Button("加载资源")
 
-    with gr.Tabs():
-        with gr.TabItem("参数设置"):
+        load_param_btn = gr.Button("加载参数")
+        load_button = gr.Button("加载资源")
+
+    # with gr.Tabs():
+    with gr.Column():
+        # with gr.TabItem("参数设置"):
+        with gr.Column():
             gr.Markdown("### 故事参数设置")
             with gr.Row():
                 topic_input = gr.Textbox(label="主题", placeholder="输入主题内容", value="")
@@ -371,62 +458,60 @@ with gr.Blocks() as demo:
                 volume_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="音量")
                 pitch_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="音调")
 
-            one_button = gr.Button("一键生成")
+            # one_button = gr.Button("一键生成")
+            #
+            # with gr.Row():
+            #     topic_button = gr.Button("生成故事")
+            #     result_button = gr.Button("生成资源")
+            #     create_video_button = gr.Button("生成视频")
+            # story_output = gr.Textbox(label="故事文本")
+            #
+            # results_output = gr.Dataframe(headers=["序号", "文本", "生图词", "语音", "图像", "资源"],
+            #                               label="视频所需资源")
+            # video_output = gr.Video(label="视频")
+            # one_button.click(
+            #     fn=one_click_pipeline,
+            #     inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input, rate_input,
+            #             volume_input, pitch_input, code_name_input],
+            #     outputs=[story_output, results_output, video_output],
+            # )
+            #
+            # topic_button.click(
+            #     fn=generate_story,
+            #     inputs=[topic_input, template_input, code_name_input],
+            #     outputs=[story_output],
+            # )
+            # result_button.click(
+            #     fn=generate_results,
+            #     inputs=[story_output, size_input, font_input, person_input, voice_input, rate_input, volume_input,
+            #             pitch_input],
+            #     outputs=results_output,
+            # )
+            # create_video_button.click(
+            #     fn=create_video,
+            #     inputs=results_output,
+            #     outputs=video_output,
+            # )
+        # with gr.TabItem("资源校对"):
 
+        with gr.Column():
+            # one_button = gr.Button("一键生成")
+            gr.Markdown('### 生成资源，批量生成同类资源')
+            generate_button = gr.Button("一键生成")
             with gr.Row():
-                topic_button = gr.Button("生成故事")
-                result_button = gr.Button("生成资源")
-                create_video_button = gr.Button("生成视频")
-            story_output = gr.Textbox(label="故事文本")
-
-            results_output = gr.Dataframe(headers=["序号", "文本", "生图词", "语音", "图像", "资源"],
-                                          label="视频所需资源")
-            video_output = gr.Video(label="视频")
-            one_button.click(
-                fn=one_click_pipeline,
-                inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input, rate_input,
-                        volume_input, pitch_input, code_name_input],
-                outputs=[story_output, results_output, video_output],
-            )
-
-            topic_button.click(
-                fn=generate_story,
-                inputs=[topic_input, template_input, code_name_input],
-                outputs=[story_output],
-            )
-            result_button.click(
-                fn=generate_results,
-                inputs=[story_output, size_input, font_input, person_input, voice_input, rate_input, volume_input,
-                        pitch_input],
-                outputs=results_output,
-            )
-            create_video_button.click(
-                fn=create_video,
-                inputs=results_output,
-                outputs=video_output,
-            )
-        with gr.TabItem("资源校对"):
-            with gr.Row():
-                with gr.Column():
-                    with gr.Row():
-                        btn_submit_change = gr.Button("生成视频")
-                        confirm_check = gr.Checkbox(
-                            label="已确认",
-                            value=True,
-                            show_label=True,
-                            info="确认使用该视频"
-                        )
-                    btn_invert_selection = gr.Button("反转选择")
-                with gr.Column():
-                    btn_merge_audio = gr.Button("合并资源")
-                    with gr.Row():
-                        btn_audio_split = gr.Button("切分资源")
-                        splitpoint_slider = gr.Slider(
-                            minimum=0, maximum=120.0, value=0, step=0.1, label="切分点"
-                        )
-                with gr.Column():
-                    btn_save_json = gr.Button("增加资源")
-                    btn_delete_audio = gr.Button("删除资源")
+                save_metadata_button = gr.Button("保存参数")
+                generate_story_button = gr.Button("生成故事")
+                split_text_button = gr.Button("切分文本")
+                synthesize_audio_button = gr.Button("合成语音")
+                generate_image_button = gr.Button("生成图像")
+                create_resource_button = gradio.Button("创建记录")
+                btn_submit_change = gr.Button("生成视频")
+                confirm_check = gr.Checkbox(
+                    label="已确认",
+                    value=True,
+                    show_label=True,
+                    info="确认使用该视频"
+                )
 
             story_check = gr.Textbox(label="故事", lines=5)
             video_check = gr.Video(
@@ -434,6 +519,7 @@ with gr.Blocks() as demo:
                 visible=True,
                 scale=5
             )
+            gr.Markdown('### 校对资源，校对并可重新单个生成')
             with gr.Row():
                 with gr.Column():
                     for idx in range(0, g_batch):
@@ -524,13 +610,27 @@ with gr.Blocks() as demo:
                             g_checkbox_list.append(res_check)
             with gr.Row():
                 with gr.Column():
+                    btn_merge_audio = gr.Button("合并资源")
+                    with gr.Row():
+                        btn_audio_split = gr.Button("切分资源")
+                        splitpoint_slider = gr.Slider(
+                            minimum=0, maximum=120.0, value=0, step=0.1, label="切分点"
+                        )
+                with gr.Column():
+                    btn_save_json = gr.Button("增加资源")
+                    btn_delete_audio = gr.Button("删除资源")
+
+            with gr.Row():
+                with gr.Column():
                     btn_change_index = gr.Button("跳转")
                     index_slider = gr.Slider(
                         minimum=0, maximum=g_max_json_index, value=0, step=1, label="序号"
                     )  # value=g_index
                 btn_previous_index = gr.Button("上一页")
                 btn_next_index = gr.Button("下一页")
+
             with gr.Row():
+                btn_invert_selection = gr.Button("反转选择")
                 batchsize_slider = gr.Slider(
                     minimum=1, maximum=g_batch, value=g_batch, step=1, label="单页数量", scale=3, interactive=False
                 )
@@ -650,12 +750,13 @@ with gr.Blocks() as demo:
             #     ],
             #     outputs=total_list,
             # )
-    video_output.change(b_video_output_change,
-                        inputs=[code_name_input, video_output],
-                        outputs=[video_check, *total_list])
+
+    # video_output.change(b_video_output_change,
+    #                     inputs=[code_name_input, video_output],
+    #                     outputs=[video_check, *total_list])
     load_param_btn.click(b_load_param_click,
                          inputs=[code_name_input],
-                         outputs=[topic_input, template_input, story_output,
+                         outputs=[topic_input, template_input, story_check,
                                   size_input, font_input, person_input, voice_input,
                                   rate_input, volume_input, pitch_input])
     load_button.click(b_load_click,
@@ -666,10 +767,31 @@ with gr.Blocks() as demo:
                                   rate_input,
                                   volume_input, pitch_input, code_name_input],
                           outputs=[story_check, video_check, *total_list])
-    btn_submit_change.click(b_compose_video, inputs=[code_name_input, *total_list],
+
+    btn_submit_change.click(b_compose_video, inputs=[username, code_name_input, *total_list],
                             outputs=[video_check, confirm_check])
     confirm_check.change(b_confirm_check_change, inputs=[code_name_input, video_check, confirm_check],
                          outputs=[video_check])
+    save_metadata_button.click(b_save_metadata_click, inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input,
+                                  rate_input,
+                                  volume_input, pitch_input, code_name_input],
+                               outputs=None)
+    generate_story_button.click(generate_story, inputs=[topic_input, template_input, code_name_input],
+                                outputs=[story_check])
+    split_text_button.click(b_split_text_click, inputs=[story_check, person_input, code_name_input],
+                            outputs=total_list[:g_max_json_index * 2])
+    synthesize_audio_button.click(b_synthesize_audio_click,
+                                  inputs=[*total_list[:g_max_json_index], voice_input, rate_input, volume_input,
+                                          pitch_input,
+                                          code_name_input, username],
+                                  outputs=total_list[g_max_json_index * 2:g_max_json_index * 3])
+    generate_image_button.click(b_generate_image_click,
+                                inputs=[*total_list[:g_max_json_index], size_input, font_input, person_input,
+                                        code_name_input,
+                                        username],
+                                outputs=total_list[g_max_json_index * 3: g_max_json_index * 4])
+    create_resource_button.click(b_create_resource_click, inputs=[code_name_input, username, *total_list],
+                                 outputs=[*total_list[g_max_json_index * 4:]])
 
 if __name__ == "__main__":
     demo.queue(max_size=1022).launch(
