@@ -150,35 +150,55 @@ http://127.0.0.1:8000/
 
 ### 注意事项
 
-1. 生成视频后会把生成的文本、语音、图片的多媒体材料保存到目录中（默认：mnt/materials/[时间戳]）。
+1. 生成视频后会把生成的文本、语音、图片的多媒体材料保存到目录中（默认：mnt/materials/username/code_name）。
 
 2. 保存多媒体材料的目录结构样例如下：
 
 ```text
-2024-08-12_18.29.54
+code_name
+│  metadata.json
 │  story.txt
 │  video.mp4
 │
 ├─audio
-│      audio_0.wav
-│      audio_1.wav
-│      audio_2.wav
-│      audio_3.wav
-│      audio_4.wav
+│      audio_100.mp3
+│      audio_101.mp3
+│      audio_102.mp3
+│      audio_103.mp3
+│      audio_104.mp3
+│      audio_105.mp3
+│      audio_106.mp3
+│      audio_107.mp3
 │
 ├─image
-│      image_0.png
-│      image_1.png
-│      image_2.png
-│      image_3.png
-│      image_4.png
+│      image_100.png
+│      image_101.png
+│      image_102.png
+│      image_103.png
+│      image_104.png
+│      image_105.png
+│      image_106.png
+│      image_107.png
+│
+├─resource
+│      resource_100.json
+│      resource_101.json
+│      resource_102.json
+│      resource_103.json
+│      resource_104.json
+│      resource_105.json
+│      resource_106.json
+│      resource_107.json
 │
 └─text
-        text_0.txt
-        text_1.txt
-        text_2.txt
-        text_3.txt
-        text_4.txt
+        text_100.txt
+        text_101.txt
+        text_102.txt
+        text_103.txt
+        text_104.txt
+        text_105.txt
+        text_106.txt
+        text_107.txt
 ```
 
 ## todo list

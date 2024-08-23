@@ -9,7 +9,7 @@ import os
 
 from dotenv import load_dotenv
 try:
-    load_dotenv('config.env')
+    load_dotenv('.env')
 except:
     print('load env file failed!')
 
@@ -35,7 +35,7 @@ def auth_checking(username, password):
 if __name__ == "__main__":
     demo.queue(max_size=1022).launch(
         server_name="0.0.0.0",
-        inbrowser=True,
+        # inbrowser=True,
         share=True,
         server_port=8000,
         quiet=True,

@@ -50,15 +50,22 @@ def chat(prompt):
 
 
 # 示例故事文本
-def generate_story(prompt, template='{}', code_name="", request: gr.Request = None):
+def generate_story(prompt, template='{}', code_name="", story="", request: gr.Request = None):
     if request:
         code_name = f'{request.username}/{code_name}'
     get_savepath(code_name, '', mkdir_ok=True)
     story_file = get_savepath(code_name, 'story.txt', mkdir_ok=False)
-    if os.path.isfile(story_file):
-        return open(story_file, encoding='utf8').read()
+
     prompt_chat = template.format(prompt)
-    story = chat(prompt_chat)
+    if prompt:
+        if os.path.isfile(story_file):
+            story = open(story_file, encoding='utf8').read()
+        else:
+            story = chat(prompt_chat)
+    elif not story:
+        story = chat(pathlib.Path(code_name).name)
+    else:
+        story = story
     with open(story_file, 'wt', encoding='utf8') as fout:
         fout.write(story)
     print(f"generate_story 输入: {prompt}")
@@ -243,7 +250,7 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
                f'/prompt/{prompt_image}'
                f'?width={width}&height={height}&seed={seed}&model={model}&nologo=true')
     try:
-        response = requests.get(img_url, verify=False, timeout=(10, 20))
+        response = requests.get(img_url, verify=False, timeout=(30, 60))
     except Exception as e:
         print(dict(img_url=img_url, error=e))
         import traceback
@@ -290,7 +297,8 @@ def add_subtitle(text, image="1280x720/73-109-137", font="msyh.ttc+40", location
     y = (height - text_h) * location[1]
     d.text((x, y), text, font=font_file, fill=color)
     outpath = image_output or (
-        img_path if os.path.isfile(img_path) else tempfile.TemporaryFile(prefix='subtitle-', suffix='.png').name)
+        img_path if os.path.isfile(img_path) else
+        tempfile.NamedTemporaryFile(prefix='subtitle-', suffix='.png', delete=False).name)
     img.save(outpath)
     return outpath
 
@@ -366,8 +374,8 @@ def create_resources(texts, prompts, audios, images, code_name):
         #           image=get_relpath(code_name, img),
         #           resource=get_relpath(code_name, res_path))
         dt = dict(index=i, text=sen, prompt=pmt,
-                  audio=f'audio/{os.path.basename(aud)}',
-                  image=f'image/{os.path.basename(img)}',
+                  audio=f'audio/audio_{i + 100}.mp3',  # os.path.basename(aud)
+                  image=f'image/image_{i + 100}.png',  # os.path.basename(img)
                   resource=get_relpath(code_name, res_path))
         with open(res_path, 'wt', encoding='utf8') as fout:
             json.dump(dt, fout, ensure_ascii=False, indent=4)
@@ -377,6 +385,7 @@ def create_resources(texts, prompts, audios, images, code_name):
 
 # 生成视频
 def create_video(results, code_name="", save_path='', request: gr.Request = None):
+    print(dict(save_path=save_path))
     if request:
         code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
@@ -387,7 +396,7 @@ def create_video(results, code_name="", save_path='', request: gr.Request = None
             return video_file
     else:
         video_file = save_path
-
+    print(dict(video_file=video_file))
     # if not isinstance(results, list):
     #     results = results.to_numpy()
     clips = []

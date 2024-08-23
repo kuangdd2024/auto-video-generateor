@@ -3,6 +3,8 @@
 
 自动生成视频及其文本、语音、图像素材，支持人工校对素材并修改，然后生成新的视频。
 """
+import tempfile
+
 import gradio
 
 from common_utils import *
@@ -52,7 +54,7 @@ def b_load_click(code_name, request: gr.Request):
     return story_check, video_check, *data_list
 
 
-def b_save_metadata_click(topic, template, size, font, person, voice_input, rate_input, volume_input, pitch_input,
+def b_save_metadata_click(topic, template, story, size, font, person, voice_input, rate_input, volume_input, pitch_input,
                     code_name="", request: gr.Request = None):
     code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
@@ -60,7 +62,7 @@ def b_save_metadata_click(topic, template, size, font, person, voice_input, rate
     metadata_file = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
 
     with open(metadata_file, 'wt', encoding='utf8') as fout:
-        dt = dict(topic=topic, template=template, story="",
+        dt = dict(topic=topic, template=template, story=story,
                   size=size, font=font, person=person,
                   voice=voice_input, rate=rate_input, volume=volume_input, pitch=pitch_input,
                   code_name=code_name, save_dir=_save_dir, resource_count=0)
@@ -164,11 +166,12 @@ def b_generate_click(topic, template, size, font, person, voice_input, rate_inpu
 def b_compose_video(username, code_name, *resource_list):
     code_name = f'{username}/{code_name}'
     video_file = get_savepath(code_name, 'video.mp4', mkdir_ok=False)
+
     if os.path.isfile(video_file):
         t = time.strftime(r'%Y%m%d%H%M%S')
         video_file = re.sub(r'([a-zA-Z]+)(\.?\d*)\.(\w+?)$', rf'\1.{t}.\3', video_file)
-    else:
-        video_file = tempfile.TemporaryFile(prefix='video-', suffix='.mp4').name
+    # else:
+    #     video_file = tempfile.NamedTemporaryFile(prefix='video-', suffix='.mp4', delete=False).name
 
     total_list = resource_list
     results = []
@@ -182,7 +185,7 @@ def b_compose_video(username, code_name, *resource_list):
             continue
         results.append(dict(index=idx, text=sen, prompt=pmt, audio=aud, image=img, resource=res))
 
-    video = create_video(results=results, code_name=code_name, save_path=video_file)
+    video = create_video(results, code_name, save_path=video_file)
     return video, False
 
 
@@ -200,7 +203,7 @@ def b_tts_change(text, audio, tts_check, voice="zh-CN-YunxiNeural", rate='+0%', 
                 t = time.strftime(r'%Y%m%d%H%M%S')
                 audio = re.sub(r'_(\d+)(\.?\d*)\.(\w+?)$', rf'_\1.{t}.\3', audio)
         else:
-            audio = tempfile.TemporaryFile(prefix='tts-', suffix='.mp3').name
+            audio = tempfile.NamedTemporaryFile(prefix='tts-', suffix='.mp3', delete=False).name
 
         audio = synthesize_speech(text, voice, rate, volume, pitch, code_name=code_name, save_path=audio)
         audio = next(audio)
@@ -226,7 +229,7 @@ def b_t2i_change(text, image, t2i_check, size="1280x720/抖音B站", font="msyh.
                 t = time.strftime(r'%Y%m%d%H%M%S')
                 image = re.sub(r'_(\d+)(\.?\d*)\.(\w+?)$', rf'_\1.{t}.\3', image)
         else:
-            image = tempfile.TemporaryFile(prefix='t2i-', suffix='.png').name
+            image = tempfile.NamedTemporaryFile(prefix='t2i-', suffix='.png', delete=False).name
 
         image = generate_images(text, size, font, person, code_name=code_name, save_path=image)
         image = next(image)
@@ -505,7 +508,7 @@ with gr.Blocks() as demo:
                 synthesize_audio_button = gr.Button("合成语音")
                 generate_image_button = gr.Button("生成图像")
                 create_resource_button = gradio.Button("创建记录")
-                btn_submit_change = gr.Button("生成视频")
+                compose_video_button = gr.Button("生成视频")
                 confirm_check = gr.Checkbox(
                     label="已确认",
                     value=True,
@@ -768,15 +771,15 @@ with gr.Blocks() as demo:
                                   volume_input, pitch_input, code_name_input],
                           outputs=[story_check, video_check, *total_list])
 
-    btn_submit_change.click(b_compose_video, inputs=[username, code_name_input, *total_list],
+    compose_video_button.click(b_compose_video, inputs=[username, code_name_input, *total_list],
                             outputs=[video_check, confirm_check])
     confirm_check.change(b_confirm_check_change, inputs=[code_name_input, video_check, confirm_check],
                          outputs=[video_check])
-    save_metadata_button.click(b_save_metadata_click, inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input,
+    save_metadata_button.click(b_save_metadata_click, inputs=[topic_input, template_input, story_check, size_input, font_input, person_input, voice_input,
                                   rate_input,
                                   volume_input, pitch_input, code_name_input],
                                outputs=None)
-    generate_story_button.click(generate_story, inputs=[topic_input, template_input, code_name_input],
+    generate_story_button.click(generate_story, inputs=[topic_input, template_input, code_name_input, story_check],
                                 outputs=[story_check])
     split_text_button.click(b_split_text_click, inputs=[story_check, person_input, code_name_input],
                             outputs=total_list[:g_max_json_index * 2])
