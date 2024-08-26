@@ -392,7 +392,7 @@ with gr.Blocks() as demo:
         username = gr.Textbox(value="", label="用户名", interactive=False)
         demo.load(load_username, inputs=None, outputs=[username])
         with gr.Column():
-            code_name_input = gr.Dropdown([], value="请输入代号名称", label="代号名称（支持自定义输入）",
+            code_name_input = gr.Dropdown([], value="", label="代号名称（支持自定义输入）",
                                           allow_custom_value=True)
             update_code_names_btn = gr.Button('更新代号列表')
             update_code_names_btn.click(b_update_code_names, inputs=None, outputs=code_name_input)

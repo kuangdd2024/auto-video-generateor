@@ -78,7 +78,7 @@ def split_sentences(story, code_name=""):
     text_dir = get_savepath(code_name, 'text', mkdir_ok=True)
 
     # sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|。|！|？)\s*', story)
-    sentences = re.split(r'([”‘（【《]*.+?[”‘）】》]*[\n。？?！!；;—…：:]+\s*)', story)
+    sentences = re.split(r'(["\'(\[“‘（【《]*.+?["\')\]”’）】》]*[\n。？?！!；;—…：:]+\s*)', story)
     sentences = [w.strip() for sen in sentences for w in re.split(r"(.{10,30}\W+)", sen)
                  if re.search(r'\w', w.strip())]
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="split_sentences")):
@@ -174,7 +174,7 @@ def synthesize_speech(sentences, voice="zh-CN-YunxiNeural", rate='+0%', volume='
                 audio_files.append(audio_path)
                 yield audio_path
                 continue
-        sentence = re.sub(r'\s+', ' ', sentence)
+        sentence = re.sub(r'[\s"\'\-=\{\}]+', ' ', sentence)
         # edge-tts --pitch=-50Hz --voice zh-CN-YunyangNeural --text "大家好，欢迎关注我的微信公众号：AI技术实战，我会在这里分享各种AI技术、AI教程、AI开源项目。" --write-media hello_in_cn.mp3
         os.system(
             f'edge-tts --voice {voice} --rate={rate} --volume={volume} --pitch={pitch} --text "{sentence}" --write-media "{audio_path}"')
@@ -233,12 +233,13 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
     :param prompt:
     :return:
     """
-    prompt_image = re.sub(r"\s+", " ", prompt.format(text) if '{}' in prompt else prompt)
+    # sentence = re.sub(r'[\s"\'\-=\{\}]+', ' ', sentence)
+    prompt_image = re.sub(r'[\s"\'\-=\{\}&?]+', " ", prompt.format(text) if '{}' in prompt else prompt)
     wxh, desc = size.split('/')
     width, height = wxh.split('x')
     seed = ord(desc[-1])
-    if prompt_image.startswith('model='):
-        g = re.match(r'model=(\w+?)#(.+)$', prompt_image)
+    if prompt_image.startswith('@model#'):
+        g = re.match(r'@model#(\w+?)#(.+)$', prompt_image)
         if g:
             model = g.group(1)
             prompt_image = g.group(2)
@@ -262,6 +263,7 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
     else:
         print(dict(response=response, img_url=img_url))
         text = re.sub(r'(\w+?\W+)', r'\1\n', text)
+        # todo 自动设置默认字体大小，一般为图像宽度的1/30
         img_path = add_subtitle(text, image=f'{wxh}/73-109-137', font="msyh.ttc+40", location=(0.5, 0.5),
                                 color=(255, 255, 255), image_output='')
         img_data = open(img_path, 'rb').read()
@@ -336,8 +338,9 @@ def generate_images(sentences, size="1280x720/抖音B站", font="msyh.ttc+40", p
 
         with open(img_path, 'wb') as fout:
             fout.write(img_data)
-
-        img_path = add_subtitle(sentence, image=img_path, font=font, location=(0.5, 0.85),
+        text = re.sub(r'(\W*\w{1,20}?\W+|\w{10,20})', r'\1\n', sentence)  # 短句单独成行
+        # text = re.sub(r'(["\'(\[“‘（【《]*\w+?["\')\]”’）】》]*[。？?！!；;—…：:，,.\-~|/\\]+\s*)', r'\1\n', sentence)
+        img_path = add_subtitle(text, image=img_path, font=font, location=(0.5, 0.85),
                                 color=(255, 255, 255), image_output=img_path)
 
         images.append(img_path)
