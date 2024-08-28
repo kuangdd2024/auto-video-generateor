@@ -80,7 +80,7 @@ def split_sentences(story, code_name=""):
 
     # sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|。|！|？)\s*', story)
     sentences = re.split(r'(["\'(\[“‘（【《]*.+?["\')\]”’）】》]*[\n。？?！!；;—…：:]+\s*)', story)
-    sentences = [w.strip() for sen in sentences for w in re.split(r"(.{10,30}\W+)", sen)
+    sentences = [w.strip() for sen in sentences for w in re.split(r"(.{10,56}\W+)", sen)
                  if re.search(r'\w', w.strip())]
     for i, sentence in enumerate(tqdm.tqdm(sentences, desc="split_sentences")):
         text_path = f'{text_dir}/text_{i + 100}.txt'
