@@ -69,7 +69,7 @@ def b_save_metadata_click(topic, template, story, size, font, person, voice_inpu
         json.dump(dt, fout, ensure_ascii=False, indent=4)
         print(dt)
 
-def b_generate_click(topic, template, size, font, person, voice_input, rate_input, volume_input, pitch_input,
+def b_generate_click(topic, template, story, size, font, person, voice_input, rate_input, volume_input, pitch_input,
                      code_name="", request: gr.Request = None):
     """
     total_list = [
@@ -96,7 +96,7 @@ def b_generate_click(topic, template, size, font, person, voice_input, rate_inpu
 
     metadata_file = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
 
-    story = ''
+    # story = ''
     video = None
     g_text_list = ['' for _ in range(g_max_json_index)]
     g_prompt_list = ['' for _ in range(g_max_json_index)]
@@ -114,7 +114,7 @@ def b_generate_click(topic, template, size, font, person, voice_input, rate_inpu
         *g_checkbox_list,
     ]
 
-    story = generate_story(topic, template, code_name)
+    story = generate_story(topic, template, code_name, story)
     yield story, video, *total_list
 
     sents = split_sentences(story, code_name=code_name)
@@ -766,7 +766,7 @@ with gr.Blocks() as demo:
                       inputs=[code_name_input],
                       outputs=[story_check, video_check, *total_list])
     generate_button.click(b_generate_click,
-                          inputs=[topic_input, template_input, size_input, font_input, person_input, voice_input,
+                          inputs=[topic_input, template_input, story_check, size_input, font_input, person_input, voice_input,
                                   rate_input,
                                   volume_input, pitch_input, code_name_input],
                           outputs=[story_check, video_check, *total_list])

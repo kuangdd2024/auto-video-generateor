@@ -10,6 +10,18 @@
 
 <table class="center">
   <tr style="font-weight: bolder;text-align:center;">
+        <td width="50%">免费并校对：人的本性是天生的吗</td>
+        <td width="50%">免费并校对：归去来兮辞</td>
+  </tr>
+  <tr>
+    <td >
+      <video src=https://github.com/user-attachments/assets/1d0b8e67-1809-451b-9eef-53e21b25b626 controls preload></video>
+    </td>
+    <td >
+      <video src=https://github.com/user-attachments/assets/fc83780c-03b0-4323-a8af-286040b5e4dd controls preload></video>
+    </td>
+  </tr>
+  <tr style="font-weight: bolder;text-align:center;">
         <td width="50%">免费并校对：空白效应</td>
         <td width="50%">免费并校对：棘轮效应</td>
   </tr>
@@ -19,42 +31,6 @@
     </td>
     <td >
       <video src=https://github.com/user-attachments/assets/b1e3ff8f-9049-4aba-adc7-707e4b16d27b controls preload></video>
-    </td>
-  </tr>
-  <tr style="font-weight: bolder;text-align:center;">
-        <td width="50%">免费并校对：巴纳姆效应</td>
-        <td width="50%">免费并校对：飞轮效应</td>
-  </tr>
-  <tr>
-    <td >
-      <video src=https://github.com/user-attachments/assets/d0c55b58-bb1d-4fb5-abb8-d6fb83c80bf8 controls preload></video>
-    </td>
-    <td >
-      <video src=https://github.com/user-attachments/assets/24103ecd-749d-4394-a3a5-8d454cfdd342 controls preload></video>
-    </td>
-  </tr>
-  <tr style="font-weight: bolder;text-align:center;">
-        <td width="50%">免费：守株待兔</td>
-        <td width="50%">校对：皮格马利翁效应</td>
-  </tr>
-  <tr>
-    <td >
-      <video src=https://github.com/user-attachments/assets/84e524b9-2518-4e84-b51b-ff4e4e0cd580 controls preload></video>
-    </td>
-    <td >
-      <video src=https://github.com/user-attachments/assets/d56734c9-759c-453f-b27f-d98ba985be1d controls preload></video>
-    </td>
-  </tr>
-  <tr style="font-weight: bolder;text-align:center;">
-        <td width="50%">简单：守株待兔</td>
-        <td width="50%">千帆：守株待兔</td>
-  </tr>
-  <tr>
-    <td >
-      <video src=https://github.com/user-attachments/assets/ff72b91c-aa4d-4409-9d5d-2611fe56436e controls preload></video>
-    </td>
-    <td >
-      <video src=https://github.com/user-attachments/assets/ab08cd7e-fa11-4b09-9258-92e859fd2974 controls preload></video>
     </td>
   </tr>
 </table>
@@ -72,6 +48,8 @@
 - 可能生成视频资源速度比较慢，请耐心等待，或者在一段时间后，通过“加载参数”和“加载资源”来加载已经生成好的视频资源。
 
 - 如果图片是文字图片，则可能后台生成图片有异常，用文字图片替代，这种情况则稍后再试试。
+
+- 一定要整个流程跑一遍之后才能修改单个素材资源，跑一遍指的是“一键生成”执行完毕，或各个分步骤逐个执行一遍，特别是“创建记录”这步要执行。
 
 ## v4. 免费+校对生成
 
@@ -92,7 +70,6 @@
 - 校对资源和生成，校对文本、语音、图像资源，生成满意视频
 
 ![avg_checking.png](static/avg_checking.png)
-
 
 ## 免费的自动视频生成
 
