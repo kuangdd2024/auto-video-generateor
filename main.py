@@ -39,6 +39,6 @@ if __name__ == "__main__":
         share=True,
         server_port=8000,
         quiet=True,
-        auth=auth_checking,
+        # auth=auth_checking,
         auth_message='欢迎来到自动视频生成的世界'
     )

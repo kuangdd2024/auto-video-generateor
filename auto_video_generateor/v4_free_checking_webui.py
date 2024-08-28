@@ -444,14 +444,14 @@ with gr.Blocks() as demo:
             ]
             font_choices = [f'{w.name}+{s}' for w in
                             sorted(pathlib.Path(pathlib.Path(_root_dir).joinpath("static", "fonts")).glob('*')) for s in
-                            [24, 32, 40]]
+                            [-1, 24, 32, 40, 0]]
             with gr.Row():
                 person_input = gr.Textbox(label="风格描述", placeholder="输入风格、限制等描述，用{}表示放正文内容",
                                           value=image_prompt_value)
                 size_input = gr.Dropdown(image_sizes, value="1280x720/抖音B站", label="图像大小",
                                          allow_custom_value=True)
                 # size_input = gr.Textbox(label="图像大小", placeholder="输入图像的宽度x高度，例如：1280x720", value="1280x720")
-                font_input = gr.Dropdown(font_choices, value="msyh.ttc+32", label="字体参数", allow_custom_value=True)
+                font_input = gr.Dropdown(font_choices, value="msyh.ttc+-1", label="字体参数（-1则自动识别、0则不要字幕）", allow_custom_value=True)
                 # font_input = gr.Textbox(label="字体参数", placeholder="输入字体类型+大小字号：", value="msyh.ttc+32")
 
             gr.Markdown('### 语音参数设置')

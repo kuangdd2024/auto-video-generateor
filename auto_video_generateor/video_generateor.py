@@ -22,6 +22,7 @@ import pydub
 import requests
 from moviepy.editor import *
 from PIL import Image, ImageDraw, ImageFont
+from pydub.silence import detect_leading_silence
 
 import tqdm
 import qianfan
@@ -147,8 +148,6 @@ Gender: Male
 
 zh_voices = get_tts_voices()
 
-from pydub.silence import detect_leading_silence
-
 
 def synthesize_speech(sentences, voice="zh-CN-YunxiNeural", rate='+0%', volume='+0%', pitch='+0Hz', code_name="",
                       save_path=''):
@@ -262,15 +261,17 @@ artist 指定了参考的艺术家，这里是“Vincent_van_Gogh”（文森特
         img_data = response.content
     else:
         print(dict(response=response, img_url=img_url))
-        text = re.sub(r'(\w+?\W+)', r'\1\n', text)
-        # todo 自动设置默认字体大小，一般为图像宽度的1/30
-        img_path = add_subtitle(text, image=f'{wxh}/73-109-137', font="msyh.ttc+40", location=(0.5, 0.5),
+        text = re.sub(r'(\W*\w{1,20}\W+|\w{10,20})', r'\1\n', text)  # 短句单独成行
+        # text = re.sub(r'(\w+?\W+)', r'\1\n', text)
+        # 自动设置默认字体大小，一般为图像宽度的1/32
+        font_size = int(wxh.split('x')[0]) // 28
+        img_path = add_subtitle(text, image=f'{wxh}/73-109-137', font=f"msyh.ttc+{font_size}", location=(0.5, 0.5),
                                 color=(255, 255, 255), image_output='')
         img_data = open(img_path, 'rb').read()
     return img_data
 
 
-def add_subtitle(text, image="1280x720/73-109-137", font="msyh.ttc+40", location=(0.5, 0.85), color=(255, 255, 255),
+def add_subtitle(text, image="1280x720/73-109-137", font="msyh.ttc+32", location=(0.5, 0.85), color=(255, 255, 255),
                  image_output=''):
     if re.match(r'\d+x\d+/\d+-\d+-\d+', image):
         size, desc = image.split('/')
@@ -283,25 +284,33 @@ def add_subtitle(text, image="1280x720/73-109-137", font="msyh.ttc+40", location
         img_path = image
         img = Image.open(img_path)
 
+        width, height = img.size
+
     d = ImageDraw.Draw(img)
 
     font_name, font_size = font.split('+')
-    # 使用Windows系统中的微软雅黑字体
-    font_path = f"C:/Windows/Fonts/{font_name}"  # 微软雅黑字体文件路径
-    if not os.path.isfile(font_path):
-        font_path = os.path.join(_root_dir, f'static/fonts/{font_name}')
-    font_file = ImageFont.truetype(font_path, int(font_size))
-    bbox = d.textbbox((0, 0), text, font=font_file)
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
-    width, height = img.size
-    x = (width - text_w) * location[0]
-    y = (height - text_h) * location[1]
-    d.text((x, y), text, font=font_file, fill=color)
-    outpath = image_output or (
-        img_path if os.path.isfile(img_path) else
-        tempfile.NamedTemporaryFile(prefix='subtitle-', suffix='.png', delete=False).name)
-    img.save(outpath)
+    if font_size == '-1':
+        font_size = int(width) // 32
+    if int(font_size):
+        # 使用Windows系统中的微软雅黑字体
+        font_path = f"C:/Windows/Fonts/{font_name}"  # 微软雅黑字体文件路径
+        if not os.path.isfile(font_path):
+            font_path = os.path.join(_root_dir, f'static/fonts/{font_name}')
+        font_file = ImageFont.truetype(font_path, int(font_size))
+        bbox = d.textbbox((0, 0), text, font=font_file)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
+        width, height = img.size
+        x = (width - text_w) * location[0]
+        y = (height - text_h) * location[1]
+        d.text((x, y), text, font=font_file, fill=color)
+        outpath = image_output or (
+            img_path if os.path.isfile(img_path) else
+            tempfile.NamedTemporaryFile(prefix='subtitle-', suffix='.png', delete=False).name)
+        img.save(outpath)
+    else:
+        # 如果字幕size为0，则不显示字幕
+        outpath = img_path
     return outpath
 
 
@@ -338,7 +347,8 @@ def generate_images(sentences, size="1280x720/抖音B站", font="msyh.ttc+40", p
 
         with open(img_path, 'wb') as fout:
             fout.write(img_data)
-        text = re.sub(r'(\W*\w{1,20}?\W+|\w{10,20})', r'\1\n', sentence)  # 短句单独成行
+
+        text = re.sub(r'(\W*.{1,24}\W+|\w{12,24})', r'\1\n', sentence)  # 短句单独成行
         # text = re.sub(r'(["\'(\[“‘（【《]*\w+?["\')\]”’）】》]*[。？?！!；;—…：:，,.\-~|/\\]+\s*)', r'\1\n', sentence)
         img_path = add_subtitle(text, image=img_path, font=font, location=(0.5, 0.85),
                                 color=(255, 255, 255), image_output=img_path)
