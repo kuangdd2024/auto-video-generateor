@@ -12,7 +12,7 @@ ENV BUILD_PREFIX=/app
 RUN mkdir -p ${BUILD_PREFIX}
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends bash vim ffmpeg wget zip
+    && apt-get install -y --no-install-recommends --fix-missing bash vim ffmpeg wget zip
 
 COPY ./requirements.txt /tmp/requirements.txt
 
