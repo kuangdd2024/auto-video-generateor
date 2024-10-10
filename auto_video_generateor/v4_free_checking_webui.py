@@ -54,8 +54,9 @@ def b_load_click(code_name, request: gr.Request):
     return story_check, video_check, *data_list
 
 
-def b_save_metadata_click(topic, template, story, size, font, person, voice_input, rate_input, volume_input, pitch_input,
-                    code_name="", request: gr.Request = None):
+def b_save_metadata_click(topic, template, story, size, font, person, voice_input, rate_input, volume_input,
+                          pitch_input,
+                          code_name="", request: gr.Request = None):
     code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
 
@@ -68,6 +69,7 @@ def b_save_metadata_click(topic, template, story, size, font, person, voice_inpu
                   code_name=code_name, save_dir=_save_dir, resource_count=0)
         json.dump(dt, fout, ensure_ascii=False, indent=4)
         print(dt)
+
 
 def b_generate_click(topic, template, story, size, font, person, voice_input, rate_input, volume_input, pitch_input,
                      code_name="", request: gr.Request = None):
@@ -161,6 +163,39 @@ def b_generate_click(topic, template, story, size, font, person, voice_input, ra
 
     video = create_video(resources, code_name)
     yield story, video, *total_list
+
+
+def b_test_click(text, topic, template, story, size, font, person, voice_input, rate_input, volume_input, pitch_input,
+                 code_name="", request: gr.Request = None):
+    """
+    total_list = [
+    *g_text_list,
+    *g_prompt_list,
+    *g_audio_list,
+    *g_image_list,
+    *g_resource_list,
+    *g_checkbox_list,
+]
+    :param story:
+    :param size:
+    :param font:
+    :param person:
+    :param voice_input:
+    :param rate_input:
+    :param volume_input:
+    :param pitch_input:
+    :param code_name:
+    :return:
+    """
+    sents = [text or topic or code_name or '山清水秀，鸟语花香']
+    code_name = 'test_{}'.format(time.strftime('%Y-%m-%d_%H.%M.%S'))
+    yield sents[0], person, None, None
+    audios = synthesize_speech(sents, voice_input, rate_input, volume_input, pitch_input, code_name=code_name)
+    audio = list(audios)[0]
+    yield sents[0], person, audio, None
+    images = generate_images(sents, size, font, person, code_name=code_name)
+    image = list(images)[0]
+    yield sents[0], person, audio, image
 
 
 def b_compose_video(username, code_name, *resource_list):
@@ -451,7 +486,8 @@ with gr.Blocks() as demo:
                 size_input = gr.Dropdown(image_sizes, value="1280x720/抖音B站", label="图像大小",
                                          allow_custom_value=True)
                 # size_input = gr.Textbox(label="图像大小", placeholder="输入图像的宽度x高度，例如：1280x720", value="1280x720")
-                font_input = gr.Dropdown(font_choices, value="msyh.ttc+-1", label="字体参数（-1则自动识别、0则不要字幕）", allow_custom_value=True)
+                font_input = gr.Dropdown(font_choices, value="msyh.ttc+-1", label="字体参数（-1则自动识别、0则不要字幕）",
+                                         allow_custom_value=True)
                 # font_input = gr.Textbox(label="字体参数", placeholder="输入字体类型+大小字号：", value="msyh.ttc+32")
 
             gr.Markdown('### 语音参数设置')
@@ -496,6 +532,44 @@ with gr.Blocks() as demo:
             #     outputs=video_output,
             # )
         # with gr.TabItem("资源校对"):
+        gr.Markdown('### 测试参数效果')
+        test_button = gr.Button("一键测试")
+        with gr.Row():
+            with gr.Column():
+                with gr.Column():
+                    with gr.Row():
+                        text = gr.Textbox(
+                            label="文本",
+                            visible=True,
+                            scale=5
+                        )
+
+                    with gr.Row():
+                        prompt = gr.Textbox(
+                            label="图像提示词",
+                            visible=True,
+                            scale=5
+                        )
+
+            with gr.Column():
+                audio = gr.Audio(
+                    label="语音",
+                    type='filepath',
+                    visible=True,
+                    # scale=1
+                )
+                image = gr.Image(
+                    label="图像",
+                    type='filepath',
+                    visible=True,
+                    # scale=5
+                )
+        test_button.click(b_test_click,
+                          inputs=[text, topic_input, template_input, topic_input, size_input, font_input, person_input,
+                                  voice_input,
+                                  rate_input,
+                                  volume_input, pitch_input, code_name_input],
+                          outputs=[text, prompt, audio, image])
 
         with gr.Column():
             # one_button = gr.Button("一键生成")
@@ -766,18 +840,21 @@ with gr.Blocks() as demo:
                       inputs=[code_name_input],
                       outputs=[story_check, video_check, *total_list])
     generate_button.click(b_generate_click,
-                          inputs=[topic_input, template_input, story_check, size_input, font_input, person_input, voice_input,
+                          inputs=[topic_input, template_input, story_check, size_input, font_input, person_input,
+                                  voice_input,
                                   rate_input,
                                   volume_input, pitch_input, code_name_input],
                           outputs=[story_check, video_check, *total_list])
 
     compose_video_button.click(b_compose_video, inputs=[username, code_name_input, *total_list],
-                            outputs=[video_check, confirm_check])
+                               outputs=[video_check, confirm_check])
     confirm_check.change(b_confirm_check_change, inputs=[code_name_input, video_check, confirm_check],
                          outputs=[video_check])
-    save_metadata_button.click(b_save_metadata_click, inputs=[topic_input, template_input, story_check, size_input, font_input, person_input, voice_input,
-                                  rate_input,
-                                  volume_input, pitch_input, code_name_input],
+    save_metadata_button.click(b_save_metadata_click,
+                               inputs=[topic_input, template_input, story_check, size_input, font_input, person_input,
+                                       voice_input,
+                                       rate_input,
+                                       volume_input, pitch_input, code_name_input],
                                outputs=None)
     generate_story_button.click(generate_story, inputs=[topic_input, template_input, code_name_input, story_check],
                                 outputs=[story_check])
