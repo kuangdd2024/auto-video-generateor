@@ -9,13 +9,9 @@
 [如何用GPT直接生成AI绘画？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/639471405)
 [2.8k star! 用开源免费的edge-tts平替科大讯飞的语音合成服务 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/685186002)
 """
-import hashlib
 import json
-import os
-import pathlib
 import re
 import tempfile
-import time
 
 import gradio as gr
 import pydub
@@ -25,29 +21,11 @@ from PIL import Image, ImageDraw, ImageFont
 from pydub.silence import detect_leading_silence
 
 import tqdm
-import qianfan
 
 # import edge_tts
 
 from common_utils import *
 from common_utils import _root_dir
-
-
-def chat(prompt):
-    """
-    调用千帆免费大语言模型生成文本。
-    :param prompt:
-    :return:
-    """
-    chat_comp = qianfan.ChatCompletion()
-    # 指定特定模型
-    resp = chat_comp.do(model="ERNIE-Speed", messages=[{
-        "role": "user",
-        "content": prompt
-    }])
-    # {'id': 'as-dtxjmpmmvi', 'object': 'chat.completion', 'created': 1723638188, 'result': '你好！有什么我可以帮助你的吗？', 'is_truncated': False, 'need_clear_history': False, 'usage': {'prompt_tokens': 1, 'completion_tokens': 8, 'total_tokens': 9}}
-    text = resp["body"]["result"]
-    return text
 
 
 # 示例故事文本
@@ -71,6 +49,17 @@ def generate_story(prompt, template='{}', code_name="", story="", request: gr.Re
         fout.write(story)
     print(f"generate_story 输入: {prompt}")
     print(f"generate_story 输出: {story}")
+    return story
+
+
+def save_story(story="", code_name="", request: gr.Request = None):
+    if request:
+        code_name = f'{request.username}/{code_name}'
+    get_savepath(code_name, '', mkdir_ok=True)
+    story_file = get_savepath(code_name, 'story.txt', mkdir_ok=False)
+
+    with open(story_file, 'wt', encoding='utf8') as fout:
+        fout.write(story)
     return story
 
 
@@ -148,6 +137,20 @@ Gender: Male
 
 zh_voices = get_tts_voices()
 
+import pyttsx3
+
+tts_engine = pyttsx3.init()
+
+# 获取语音属性
+rate = tts_engine.getProperty('rate')
+volume = tts_engine.getProperty('volume')
+voices = tts_engine.getProperty('voices')
+
+# 设置语音属性（可选）
+tts_engine.setProperty('voice', voices[0].id)  # 音色
+tts_engine.setProperty('rate', rate)  # 语速
+tts_engine.setProperty('volume', volume)  # 音量
+
 
 def synthesize_speech(sentences, voice="zh-CN-YunxiNeural", rate='+0%', volume='+0%', pitch='+0Hz', code_name="",
                       save_path=''):
@@ -174,11 +177,18 @@ def synthesize_speech(sentences, voice="zh-CN-YunxiNeural", rate='+0%', volume='
                 yield audio_path
                 continue
         sentence = re.sub(r'[\s"\'\-=\{\}]+', ' ', sentence)
+
         # edge-tts --pitch=-50Hz --voice zh-CN-YunyangNeural --text "大家好，欢迎关注我的微信公众号：AI技术实战，我会在这里分享各种AI技术、AI教程、AI开源项目。" --write-media hello_in_cn.mp3
         os.system(
             f'edge-tts --voice {voice} --rate={rate} --volume={volume} --pitch={pitch} --text "{sentence}" --write-media "{audio_path}"')
         # communicate = edge_tts.Communicate(sentence, voice=voice, rate=rate, volume=volume, pitch=pitch)
         # await communicate.save(audio_path)
+
+        # 如果edge-tts合成失败，则用默认声音
+        if not os.path.isfile(audio_path) or os.path.getsize(audio_path) < 1024:
+            tts_engine.save_to_file(text=sentence, filename=audio_path)
+            tts_engine.runAndWait()
+
         seg = pydub.AudioSegment.from_file(audio_path)
         sil_head = detect_leading_silence(seg)
         sil_tail = detect_leading_silence(seg.reverse())
@@ -398,7 +408,7 @@ def create_resources(texts, prompts, audios, images, code_name):
 
 # 生成视频
 def create_video(results, code_name="", save_path='', request: gr.Request = None):
-    print(dict(save_path=save_path))
+    # print(dict(save_path=save_path))
     if request:
         code_name = f'{request.username}/{code_name}'
     _save_dir = get_savepath(code_name, '', mkdir_ok=True)
@@ -420,7 +430,7 @@ def create_video(results, code_name="", save_path='', request: gr.Request = None
         clips.append(video)
 
     final_video = concatenate_videoclips(clips, method="compose")
-    final_video.write_videofile(video_file, fps=24)
+    final_video.write_videofile(video_file, fps=4)  # 24
     print(f"create_video 输入: {results}")
     print(f"create_video 输出: {video_file}")
     return video_file

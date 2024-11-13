@@ -8,6 +8,7 @@ import tempfile
 import gradio
 
 from common_utils import *
+from ppt_utils import *
 from video_generateor import *
 from resource_checking import *
 
@@ -156,6 +157,111 @@ def b_generate_click(topic, template, story, size, font, person, voice_input, ra
 
     with open(metadata_file, 'wt', encoding='utf8') as fout:
         dt = dict(topic=topic, template=template, story=story,
+                  size=size, font=font, person=person,
+                  voice=voice_input, rate=rate_input, volume=volume_input, pitch=pitch_input,
+                  code_name=code_name, save_dir=_save_dir, resource_count=n_sents)
+        json.dump(dt, fout, ensure_ascii=False, indent=4)
+
+    video = create_video(resources, code_name)
+    yield story, video, *total_list
+
+
+def b_ppt_click(ppt, size, font, person, voice_input, rate_input, volume_input, pitch_input,
+                code_name="", request: gr.Request = None):
+    """
+    total_list = [
+    *g_text_list,
+    *g_prompt_list,
+    *g_audio_list,
+    *g_image_list,
+    *g_resource_list,
+    *g_checkbox_list,
+]
+    :param story:
+    :param size:
+    :param font:
+    :param person:
+    :param voice_input:
+    :param rate_input:
+    :param volume_input:
+    :param pitch_input:
+    :param code_name:
+    :return:
+    """
+    print(ppt)
+    code_name = f'{request.username}/{code_name}'
+    _save_dir = get_savepath(code_name, '', mkdir_ok=True)
+
+    metadata_file = get_savepath(code_name, 'metadata.json', mkdir_ok=False)
+
+    # story = ''
+    video = None
+    g_text_list = ['' for _ in range(g_max_json_index)]
+    g_prompt_list = ['' for _ in range(g_max_json_index)]
+    g_audio_list = [None for _ in range(g_max_json_index)]
+    g_image_list = [None for _ in range(g_max_json_index)]
+    g_resource_list = [{} for _ in range(g_max_json_index)]
+    g_checkbox_list = [False for _ in range(g_max_json_index)]
+
+    total_list = [
+        *g_text_list,
+        *g_prompt_list,
+        *g_audio_list,
+        *g_image_list,
+        *g_resource_list,
+        *g_checkbox_list,
+    ]
+
+    ppt_path, pdf_path = ppt_to_pdf(ppt, code_name=code_name)
+
+    if ppt_path:
+        sents = ppt_to_texts(ppt_path, code_name=code_name)
+    else:
+        sents = pdf_to_texts(pdf_path, code_name=code_name)
+
+    sents = [w.replace('\n', '。') if w else '看幻灯片。' for w in sents]
+    story = '\n'.join(sents)
+    story = save_story(story, code_name=code_name)
+    yield story, video, *total_list
+
+    # sents = split_sentences(story, code_name=code_name)
+    for idx, text in enumerate(sents):
+        total_list[idx] = text
+        yield story, video, *total_list
+
+    for idx, text in enumerate(sents):
+        total_list[g_max_json_index + idx] = person
+        yield story, video, *total_list
+
+    audios = synthesize_speech(sents, voice_input, rate_input, volume_input, pitch_input, code_name=code_name)
+    for idx, audio in enumerate(audios):
+        total_list[2 * g_max_json_index + idx] = audio
+        yield story, video, *total_list
+
+    images = pdf_to_images(pdf_path, code_name=code_name)
+    # images = generate_images(sents, size, font, person, code_name=code_name)
+    for idx, image in enumerate(images):
+        total_list[3 * g_max_json_index + idx] = image
+        yield story, video, *total_list
+
+    n_sents = len(sents)
+    resources = create_resources(texts=total_list[: n_sents],
+                                 prompts=total_list[g_max_json_index: g_max_json_index + n_sents],
+                                 audios=total_list[2 * g_max_json_index: 2 * g_max_json_index + n_sents],
+                                 images=total_list[3 * g_max_json_index: 3 * g_max_json_index + n_sents],
+                                 code_name=code_name)
+    resources = list(resources)
+
+    for idx, res in enumerate(resources):
+        total_list[4 * g_max_json_index + idx] = res
+        yield story, video, *total_list
+
+    for idx, _ in enumerate(sents):
+        total_list[5 * g_max_json_index + idx] = True
+        yield story, video, *total_list
+
+    with open(metadata_file, 'wt', encoding='utf8') as fout:
+        dt = dict(topic=ppt, template=person, story=story,
                   size=size, font=font, person=person,
                   voice=voice_input, rate=rate_input, volume=volume_input, pitch=pitch_input,
                   code_name=code_name, save_dir=_save_dir, resource_count=n_sents)
@@ -410,7 +516,9 @@ template_value = """内容：```{}```
 
 template_value = """内容：```{}```
 
-请根据以上代码块的内容生成口语风格的文案；前面部分讲解内容核心，后半部分讲案例故事，语言风趣幽默；整个文案限制在100字以内。"""
+请根据以上代码块的内容生成口语风格的文案；前面部分讲解内容核心，后半部分讲案例故事，语言风趣幽默；整个文案限制在100字以内。
+
+注意：仅输出文案内容，不用输出其他信息。"""
 
 image_prompt_value = "图像内容：{} 图像限制：电影风格，写实主义，环境简单，没有文字"
 
@@ -451,6 +559,10 @@ with gr.Blocks() as demo:
                 topic_input = gr.Textbox(label="主题", placeholder="输入主题内容", value="")
                 template_input = gr.Textbox(label="提示词模板", placeholder="输入提示词模板，用{}表示放主题文字的地方",
                                             value=template_value)
+            gr.Markdown("### PPT上传")
+            with gr.Row():
+                ppt_input = gr.File(label="上传PPT文件")
+                ppt_button = gr.Button("生成视频")
 
             gr.Markdown("### 图像参数设置")
             image_sizes = [
@@ -839,6 +951,12 @@ with gr.Blocks() as demo:
     load_button.click(b_load_click,
                       inputs=[code_name_input],
                       outputs=[story_check, video_check, *total_list])
+    ppt_button.click(b_ppt_click,
+                     inputs=[ppt_input, size_input, font_input, person_input,
+                             voice_input,
+                             rate_input,
+                             volume_input, pitch_input, code_name_input],
+                     outputs=[story_check, video_check, *total_list])
     generate_button.click(b_generate_click,
                           inputs=[topic_input, template_input, story_check, size_input, font_input, person_input,
                                   voice_input,

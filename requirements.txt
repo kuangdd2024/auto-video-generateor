@@ -11,3 +11,9 @@ pydub
 python-dotenv
 librosa
 soundfile
+#安装LibreOffice
+python-pptx
+pdf2image
+PyMuPDF
+comtypes
+Pillow

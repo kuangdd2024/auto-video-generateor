@@ -3,6 +3,7 @@ import time
 import pathlib
 
 import gradio
+import qianfan
 
 # 自行在环境变量设置千帆的参数
 # os.environ["QIANFAN_ACCESS_KEY"] = "ALTAKc5yYaLe5QS***********"
@@ -41,4 +42,20 @@ def get_abspath(code_name, relpath, request: gradio.Request = None):
     abspath = '/'.join(pathlib.Path(_save_dir).joinpath(relpath).parts)
     return abspath
 
+
 # os.makedirs(_save_dir, exist_ok=True)
+def chat(prompt):
+    """
+    调用千帆免费大语言模型生成文本。
+    :param prompt:
+    :return:
+    """
+    chat_comp = qianfan.ChatCompletion()
+    # 指定特定模型
+    resp = chat_comp.do(model="ERNIE-Speed", messages=[{
+        "role": "user",
+        "content": prompt
+    }])
+    # {'id': 'as-dtxjmpmmvi', 'object': 'chat.completion', 'created': 1723638188, 'result': '你好！有什么我可以帮助你的吗？', 'is_truncated': False, 'need_clear_history': False, 'usage': {'prompt_tokens': 1, 'completion_tokens': 8, 'total_tokens': 9}}
+    text = resp["body"]["result"]
+    return text
